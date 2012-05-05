@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="hero-unit">
+{%- if not notes.count() -%}
+<h1>No posts yet!</h1>
+{% endif %}
+{% for note in notes %}
+<p>
+<h1>{{ note.title }}</h1> 
+<pre><big>{{ note.text }} </big></pre>
+	<div class="pull-right" style="color:#999999;">
+    Created: {{ note.date.strftime('%Y-%m-%d')  }} <a href ="edit/{{ note.key().id() }}">  edit </a> 
+    TODO: Status: {{ note.status  }} 
+	</div>
+</p><br/>
+{% endfor %}
+</div>
+{% endblock content %}

@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+
+<form action="" method="post" class="well">
+ <fieldset>
+    <legend>Enter Your Blog Post</legend>
+    <div class="control-group">    
+      <label class="control-label" for="id_title">Title:</label>
+      <div class="controls">
+      	<input type="text" name="subject" id ="id_title" style="width:250px;height:25px" />
+      	<label class="control-label" for="id_text">Post:</label>
+      	<div class="boxsizingBorder">
+      	<textarea style="width:100%;height:300px" name="content" id="id_text"></textarea>
+      	</div>
+      </div>
+     </div>
+ </fieldset>
+  	 <legend></legend>
+  	 <input class="btn-large btn-primary" type="submit" name="post" value=Post style="margin-right:10px;" />
+  	 <input class="btn-large btn-inverse" type="submit" name="save" value=Save />
+</form>
+
+{% endblock content %}
