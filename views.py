@@ -8,35 +8,35 @@ Created on May 3, 2012
 import webapp2
 import jinja2
 import os
-from datetime import datetime
+from google.appengine.ext.webapp import blobstore_handlers
+from google.appengine.ext import blobstore
 from google.appengine.ext import db
 from models import Posts
 
 
 TEMPLATE_DIR = os.path.join(os.path.dirname(__file__), 'templates')
-jinja_environment = jinja2.Environment(loader = jinja2.FileSystemLoader(TEMPLATE_DIR), autoescape=True)
+jinja_environment = jinja2.Environment(loader = jinja2.FileSystemLoader(TEMPLATE_DIR), autoescape=False)
 
 
 class BaseHandler(webapp2.RequestHandler):
     def render_template(
         self,
         filename,
-        template_values,
-        **template_args):
+        template_values={}):
         template = jinja_environment.get_template(filename)
-        self.response.out.write(template.render(template_values))
+        self.response.out.write(template.render(**template_values))
 
 
 class MainPage(BaseHandler):
-
     def get(self):
-        #self.write("test")
         posts = Posts.all()
         posts.order("-date")
         self.render_template('index.html', {'notes': posts})
 
 
-class CreatePost(BaseHandler):
+class PostHandler(BaseHandler):
+    def send_error(self, field, subject, content):
+        self.render_template('post.html', {})
 
     def post(self):
         is_post = self.request.POST.get('post', None) 
@@ -47,36 +47,47 @@ class CreatePost(BaseHandler):
         elif is_save:
             post_stat = "Saved"
         else: 
-            raise Exception('no form action given')  
-        post = Posts(
-                  title=self.request.get('subject'),
-                  text=self.request.get('content'),
+            raise Exception('no form action given')
+        #error checking
+        post_sub = self.request.get('subject')
+        post_content = self.request.get('content')
+        
+        if post_sub == "":
+            self.send_error('title', "post.html")
+            return
+        elif post_content == "":
+            self.send_error('content', "post.html")
+            return
+        
+        #no errors, so save/update post
+        if not self.request.POST.get('id', None):
+            post = Posts(
+                  title=post_sub,
+                  text=post_content,
                   status=post_stat    
                   )
+        else:
+            post = db.get(self.request.get('id'))
+            post.title = post_sub
+            post.text = post_content
+            post.status = post_stat  
+                                  
         post.put()
         return webapp2.redirect('/')
 
     def get(self):
-        self.render_template('newpost.html', {})
-
-
-class EditPost(BaseHandler):
-
-    def post(self, note_id):
-        iden = int(note_id)
-        note = db.get(db.Key.from_path('Notes', iden))
-        note.author = self.request.get('author')
-        note.text = self.request.get('text')
-        note.priority = self.request.get('priority')
-        note.status = self.request.get('status')
-        note.date = datetime.now()
-        note.put()
-        return webapp2.redirect('/')
-
-    def get(self, note_id):
-        iden = int(note_id)
-        note = db.get(db.Key.from_path('Notes', iden))
-        self.render_template('edit.html', {'note': note})
+        upload = blobstore.create_upload_url_async('/post')
+        if self.request.GET.get('id', None):
+            key = self.request.get('id')
+            post = db.get(key)
+            text = post.text
+            title = post.title
+            upload_title = "Change Picture:"
+            self.render_template('post.html', {'text' : text, 'title' : title, 'id' : key, 
+                                               'picUploadLabel' : upload_title, 'upload_url' : upload})
+        else:
+            upload_title = "Include Picture:"    
+            self.render_template('post.html', {'picUploadLabel' : upload_title, 'upload_url' : upload})
 
 
 class DeletePost(BaseHandler):
