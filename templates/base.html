@@ -46,21 +46,25 @@
             <span class="icon-bar"></span>
           </a>
           <a class="brand" href="#">TODO:Name</a>
-          <div class="btn-group pull-right">
-            <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
-              <i class="icon-user"></i> TODO:Username
-              <span class="caret"></span>
-            </a>
-            <ul class="dropdown-menu">
-              <li><a href="#">Profile</a></li>
-              <li class="divider"></li>
-              <li><a href="#">Sign Out</a></li>
-            </ul>
-          </div>
+          {%- if users.get_current_user(): -%} 
+          	<div class="btn-group pull-right">
+               <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+              	<i class="icon-user"></i>{{ users.get_current_user().nickname() }}
+              	<span class="caret"></span>
+               </a>
+               <ul class="dropdown-menu">
+              	<li><a href="#">Profile</a></li>
+              	<li class="divider"></li>
+              	<li><a href= {{ logout }} >Sign Out</a></li>
+               </ul>
+         	 </div>
+          {% endif %}
           <div class="nav-collapse">
             <ul class="nav">
               <li class="active"><a href="/">Home</a></li>
-              <li><a href="/post">New Post</a></li>
+              	{%- if users.get_current_user(): -%}
+              		<li><a href="/post">New Post</a></li>
+              	{% endif %}
               <li><a href="#contact">Contact</a></li>
             </ul>
           </div><!--/.nav-collapse -->
@@ -92,8 +96,8 @@
           </div><!--/.well -->
         </div><!--/span-->
     <div class="span9">
-    {% block content %}
-    {% endblock content %}
+        {% block content %}
+        {% endblock %}
     </div>
   </body>
 </html>
