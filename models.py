@@ -13,6 +13,7 @@ class Posts(db.Model):
     text = db.TextProperty()
     status = db.StringProperty()
     date = db.DateTimeProperty(auto_now_add=True)
+    video_id = db.StringProperty()
     blob_key = blobstore.BlobReferenceProperty(default=None)
     
 class Comments(db.Model):

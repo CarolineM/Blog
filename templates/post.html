@@ -1,21 +1,52 @@
 {% extends "base.html" %}
-{% block content %} 
+{% block content %}
+	    <script type="text/javascript">$(document).ready(function() {
+	    	$("#id_text_tbl").css("width", "100%")
+	    });
+	    </script> 
 		<legend>Create Your Content</legend>
 			<div class="control-group">
 			<div class="controls">
 			<div class="row-fluid">
-				<form action='{{ upload_url }}' method="POST" class="well" enctype="multipart/form-data">
-				<div class="pull-right">
-					<label class="control-label" for="id_file">{{ picUploadLabel }}</label>
-					<input type="file" id="id_file" name="file"id="fileInput"/>	
+			<div class="pull-right">
+					<br><br/><br/>
+					<table>
+					<tr>
+					<td>
+					 <button class="btn-inverse" style="margin-right:60px;" id="include_pic">{{ picUploadLabel }}</button>
+					 </td>
+					 <td>
+					 <button class="btn-inverse" style="margin-right:100px;" id="include_vid">{{ vidUploadLabel }}</button>
+					 </td>
+					 </tr>
+					</table>
+					<script>
+						include_pic.onclick = function() { 
+							var file_input = document.getElementById("main_form").elements.file; 
+							file_input.style.display = "";
+							include_pic.style.display = "none"
+							}
+						include_vid.onclick = function() {
+							var vid_input = document.getElementById("main_form").elements.video;
+							var vid_label = document.getElementById("vid_label"); 
+							vid_input.style.display = "";
+							vid_label.style.display = "";
+							include_vid.style.display = "none"
+						}
+					</script>
+					</div>
+				<form action='{{ upload_url }}' method="POST" class="well" id="main_form" enctype="multipart/form-data">
+				  <div class="pull-right">
+					<br/><br><input type="file" name="file" id="fileInput" style="display: none;"/>
+							  <label class="control-label" for="id_vid" id="vid_label" style="display: none;">Enter YouTube URL:</label>
+							 <input type="text" id="id_vid" name="video" style="display: none;" />
 					</div>
 					<label class="control-label" for="id_title">Title:</label> 
 					<input type="text" value='{{ title }}' name="subject" id="id_title" style="width: 250px; height: 25px" /> 
 					<label class="control-label" for="id_text">Post:</label>
 					<div class="boxsizingBorder">
-					<!-- TODO:relative width -->
 						<div>
-						<textarea style="width: 80%; height: 350px" name="content" id="id_text" class="tinymce">{{ text }}</textarea>
+						<textarea style="height: 350px; width:95%; align:center" name="content" id="id_text" class="tinymce">{{ text }}</textarea>
 						</div>
 						<input type="hidden" name="id" value='{{ id }}'>
 					</div>

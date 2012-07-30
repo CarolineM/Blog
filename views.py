@@ -15,6 +15,7 @@ from google.appengine.ext import db
 from models import Posts
 from google.appengine.api import images
 from google.appengine.api import users
+from urlparse import urlparse, parse_qs
 
 
 TEMPLATE_DIR = os.path.join(os.path.dirname(__file__), 'templates')
@@ -69,10 +70,12 @@ class PostHandler(BaseHandler, blobstore_handlers.BlobstoreUploadHandler):
             post_stat = "Saved"
         else: 
             raise Exception('no form action given')
-        #error checking
+        
         post_sub = self.request.get('subject')
         post_content = self.request.get('content')
+        vid_url = self.request.get('video')
         
+        #error checking          
         if post_sub == "":
             self.send_error('title', "post.html")
             return
@@ -80,12 +83,19 @@ class PostHandler(BaseHandler, blobstore_handlers.BlobstoreUploadHandler):
             self.send_error('content', "post.html")
             return
         
+        #extract vid id
+        if vid_url:
+            vid = parse_qs(urlparse(vid_url).query)['v'][0]
+        else:
+            vid = None
+        
         #no errors, so save/update post
         if not self.request.POST.get('id', None):
             post = Posts(
                   title=post_sub,
                   text=post_content,
                   status=post_stat,
+                  video_id=vid,
                   blob_key=blob_key   
                   )
         else:
@@ -108,12 +118,14 @@ class PostHandler(BaseHandler, blobstore_handlers.BlobstoreUploadHandler):
                 post = db.get(key)
                 text = post.text
                 title = post.title
-                upload_title = "Change Picture:"
+                pic_upload_title = "Change Picture"
+                vid_upload_title = "Change Video"
                 self.render_template('post.html', {'text' : text, 'title' : title, 'id' : key, 
-                                               'picUploadLabel' : upload_title, 'upload_url' : upload, 'users' : users })
+                                               'picUploadLabel' : pic_upload_title, 'vidUploadLabel' : vid_upload_title, 'upload_url' : upload })
             else:
-                upload_title = "Include Picture:"    
-                self.render_template('post.html', {'picUploadLabel' : upload_title, 'upload_url' : upload, 'users' : users })
+                pic_upload_title = "Upload Picture"
+                vid_upload_title = "Upload Video"     
+                self.render_template('post.html', {'picUploadLabel' : pic_upload_title, 'vidUploadLabel' : vid_upload_title,'upload_url' : upload })
         else:
             message= "You must login to access this page".encode("utf8")
             self.redirect('/logout?message=' + message)
@@ -150,8 +162,7 @@ class LogoutHandler(BaseHandler):
     def get(self):
         message = self.request.get("message")
         self.render_template('logout.html', {'message' : message, 'users' : users })
-        
-            
+                    
             
 class DeletePost(BaseHandler):
     def get(self, note_id):

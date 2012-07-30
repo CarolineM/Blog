@@ -7,8 +7,11 @@
 		<div class="hero-unit">
 			<h1>{{ note.title }}</h1>
 			{%- if notes[note]: -%}
-				<img src="{{ notes[note] }}" alt="banner" />
-			{% endif %} 
+				<p align="center"><img src="{{ notes[note] }}" alt="banner" style="margin:auto; margin-bottom:20px;"/></p>
+			{% endif %}
+			{%- if note.video_id -%}
+			  <p align="center"><iframe width="95%" height="360" style="margin:auto;" frameborder="0" src="http://www.youtube.com/embed/{{ note.video_id }}?feature=player_embedded" allowfullscreen></iframe></p>
+			{% endif %}
 			<p>{{ note.text }}</p> 
 		</div>
 		<div class="pull-right" style="color:#999999;">
