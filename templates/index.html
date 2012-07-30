@@ -1,12 +1,12 @@
 {% extends "base.html" %}
 {% block content %}
-{%- if not notes.keys():-%}
+{%- if not notes:-%}
 <h1>Coming soon!</h1>
 {% endif %}
-{% for note in notes.iterkeys() %}
+{% for note in notes %}
 		<div class="hero-unit">
 			<h1>{{ note.title }}</h1>
-			{%- if notes[note]: -%}
+			{%- if img[note]: -%}
 				<p align="center"><img src="{{ notes[note] }}" alt="banner" style="margin:auto; margin-bottom:20px;"/></p>
 			{% endif %}
 			{%- if note.video_id -%}

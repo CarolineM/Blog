@@ -9,6 +9,7 @@ import webapp2
 import jinja2
 import os
 import re
+import operator
 from google.appengine.ext.webapp import blobstore_handlers
 from google.appengine.ext import blobstore
 from google.appengine.ext import db
@@ -36,8 +37,10 @@ class BaseHandler(webapp2.RequestHandler):
 
 class MainPage(BaseHandler, blobstore_handlers.BlobstoreDownloadHandler):
     def get(self):
-        posts = Posts.all()
-        posts.order("-date")
+        #TODO: paging
+        q = db.GqlQuery("SELECT * FROM Posts " +
+                        "ORDER BY date DESC")
+        posts = q.fetch(10)
            
         dictionary = {}
         for post in posts:
@@ -46,7 +49,7 @@ class MainPage(BaseHandler, blobstore_handlers.BlobstoreDownloadHandler):
             else:
                 blob_url = None
             dictionary[post] = blob_url   
-        self.render_template('index.html', {'notes': dictionary,  })
+        self.render_template('index.html', {'notes': posts, 'img' : dictionary  })
         
 
 class PostHandler(BaseHandler, blobstore_handlers.BlobstoreUploadHandler):
