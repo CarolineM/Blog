@@ -18,7 +18,7 @@
 			theme_advanced_resizing : true,
 
 			// Example content CSS (should be your site CSS)
-			content_css : "bootstrap.css",
+			content_css : "resources/css/bootstrap.css",
 
 			// Drop lists for link/image/media/template dialogs
 			template_external_list_url : "lists/template_list.js",

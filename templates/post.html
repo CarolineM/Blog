@@ -1,65 +1,77 @@
 {% extends "base.html" %}
 {% block content %}
-	    <script type="text/javascript">$(document).ready(function() {
-	    	$("#id_text_tbl").css("width", "100%")
-	    });
+	    <script type="text/javascript">
+	    	$(function() {
+	    		$("#id_text_tbl").css("width", "100%")
+	    	});
+	    	$(function() {
+				$( "#datepicker" ).datepicker("setDate", new Date());
+			});
 	    </script> 
-		<legend>Create Your Content</legend>
+		<legend>Create Your Blog Post</legend>
 			<div class="control-group">
 			<div class="controls">
 			<div class="row-fluid">
-			<div class="pull-right">
-					<br><br/><br/>
-					<table>
+				<form action='{{ upload_url }}' method="POST" class="well" id="main_form" enctype="multipart/form-data">
+				<table>
+				   <tr>
+				   <td>				
+						<h4>Title:</h4>
+				   </td>
+					<td>
+						<h4>Date:</h4>
+					</td>
+					</tr>
 					<tr>
 					<td>
-					 <button class="btn-inverse" style="margin-right:60px;" id="include_pic">{{ picUploadLabel }}</button>
+					  <input class="input-box-lrg" type="text" value='{{ title }}' name="subject" id="id_title" style="margin-right: 15px;"/>
 					 </td>
 					 <td>
-					 <button class="btn-inverse" style="margin-right:100px;" id="include_vid">{{ vidUploadLabel }}</button>
-					 </td>
-					 </tr>
-					</table>
-					<script>
-						include_pic.onclick = function() { 
-							var file_input = document.getElementById("main_form").elements.file; 
-							file_input.style.display = "";
-							include_pic.style.display = "none"
-							}
-						include_vid.onclick = function() {
-							var vid_input = document.getElementById("main_form").elements.video;
-							var vid_label = document.getElementById("vid_label"); 
-							vid_input.style.display = "";
-							vid_label.style.display = "";
-							include_vid.style.display = "none"
-						}
-					</script>
-					</div>
-				<form action='{{ upload_url }}' method="POST" class="well" id="main_form" enctype="multipart/form-data">
-				  <div class="pull-right">
-					<br/><br><input type="file" name="file" id="fileInput" style="display: none;"/>
-							  <label class="control-label" for="id_vid" id="vid_label" style="display: none;">Enter YouTube URL:</label>
-							 <input type="text" id="id_vid" name="video" style="display: none;" />
-					</div>
-					<label class="control-label" for="id_title">Title:</label> 
-					<input type="text" value='{{ title }}' name="subject" id="id_title" style="width: 250px; height: 25px" /> 
-					<label class="control-label" for="id_text">Post:</label>
+						<input class="input-box-lrg" type="text" id="datepicker">
+						</td>
+						</tr>
+					</table>	
+					<h4>Post:</h4>
 					<div class="boxsizingBorder">
 						<div>
-						<textarea style="height: 350px; width:95%; align:center" name="content" id="id_text" class="tinymce">{{ text }}</textarea>
+						<textarea style="height: 350px; width: 100%;" name="content" id="id_text" class="tinymce">{{ text }}</textarea>
 						</div>
 						<input type="hidden" name="id" value='{{ id }}'>
 					</div>
 					<br/>
-					<button class="btn-mini btn-info" onclick="$('#id_text').tinymce().hide();return false;">Hide Panel</button>
-					<button class="btn-mini btn-info" onclick="alert($('#id_text').html());return false;">Get HTML</button>
-					<button class="btn-mini btn-info" onclick="alert($('#id_text').tinymce().selection.getContent());return false;">Get selected HTML</button>
-					<button class="btn-mini btn-info" onclick="alert($('#id_text').tinymce().selection.getContent({format : 'text'}));return false;">Get selected text</button>
-					<button class="btn-mini btn-info" onclick="$('#id_text').tinymce().execCommand('mceReplaceContent',false,'<b>{$selection}</b>');return false;">Remove formatting from selection</button>
-					<br />
-					<br />
-					<input class="btn-large btn-primary" type="submit"name="post" value=Post style="margin-right: 10px;" /> 
-					<input class="btn-large btn-inverse" type="submit" name="save" value=Save />
+					<button class="btn-mini btn-inverse" style="margin:4px;" onclick="$('#id_text').tinymce().hide();return false;">Hide Panel</button>
+					<button class="btn-mini btn-inverse" style="margin:4px;" onclick="alert($('#id_text').html());return false;">Get HTML</button>
+					<button class="btn-mini btn-inverse" style="margin:4px;" onclick="alert($('#id_text').tinymce().selection.getContent());return false;">Get selected HTML</button>
+					<button class="btn-mini btn-inverse" style="margin:4px;" onclick="alert($('#id_text').tinymce().selection.getContent({format : 'text'}));return false;">Get selected text</button>
+					<button class="btn-mini btn-inverse" style="margin:4px;" onclick="$('#id_text').tinymce().execCommand('mceReplaceContent',false,'<b>{$selection}</b>');return false;">Remove formatting from selection</button>
+					<br/><br/>
+					<table class="pull-right">
+					   <tr>
+					   <td>
+					   	<h5>Upload a Picture:</h5>
+					   </td>
+					   <td>
+					     <input class="input-file" style="margin-top: 2px;" type="file" name="file" id="fileInput" />
+					   </td>
+					   </tr>
+					   <tr>
+					   <td>
+					   <h5 style="margin-right: 5px;">Enter YouTube URL:</h5> 
+					   </td>
+					   <td><input class="input-box-lrg" type="text" id="id_vid" name="video" /></td>
+					   </tr>
+						</table>
+						<br/>
+						<table>
+					   <tr>
+					   	<td>					
+							<input class="btn-large btn-primary" type="submit"name="post" value=Post style="margin-right: 10px;" /> 
+						</td>
+						<td>
+							<input class="btn-large btn-inverse" type="submit" name="save" value=Save />
+						</td>
+					   </tr>
+					</table>
 				</form>
 			</div>
 			</div>
