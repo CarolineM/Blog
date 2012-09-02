@@ -34,18 +34,21 @@ class MediaHelper():
         
 class PostFilter():
     def loadMainPage(self, queryStr):
-            #TODO: paging
+        #TODO: paging
         q = db.GqlQuery(queryStr)
+        #TODO make configurable in settings
         posts = q.fetch(10)
            
-        dictionary = {}
+        dictImg = {}
+        dictVidId = {}
         for post in posts:
             #get image location
             blob_url = MediaHelper().getImageURL(post.blob_key)
-            dictionary[post] = blob_url
+            dictImg[post] = blob_url
             #parse youtube url
-            vid = MediaHelper().parseYoutubeId(post.video_url)   
-        self.render_template('index.html', {'notes': posts, 'img' : dictionary, 'video' : vid})
+            dictVidId[post] = MediaHelper().parseYoutubeId(post.video_url)
+        return {'notes': posts, 'img' : dictImg, 'video' : dictVidId}  
+
         
     def send_error(self, field, subject, content):
         pass

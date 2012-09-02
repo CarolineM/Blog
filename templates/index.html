@@ -1,7 +1,10 @@
 {% extends "base.html" %}
 {% block content %}
-{%- if not notes:-%}
-<h1>Coming soon!</h1>
+{%- if not notes and saved:-%}
+<h1>No Saved Data</h1>
+{% endif %}
+{%- if not notes and not saved:-%}
+<h1>Coming Soon!</h1>
 {% endif %}
 {% for note in notes %}
 		<div class="hero-unit">
@@ -9,8 +12,8 @@
 			{%- if img[note]: -%}
 				<p align="center"><img src="{{ img[note] }}" alt="banner" style="margin:auto; margin-bottom:20px;"/></p>
 			{% endif %}
-			{%- if video -%}
-			  <p align="center"><iframe width="95%" height="360" style="margin:auto;" frameborder="0" src="http://www.youtube.com/embed/{{ video }}?feature=player_embedded" allowfullscreen></iframe></p>
+			{%- if video[note] -%}
+			  <p align="center"><iframe width="95%" height="360" style="margin:auto;" frameborder="0" src="http://www.youtube.com/embed/{{ video[note] }}?feature=player_embedded" allowfullscreen></iframe></p>
 			{% endif %}
 			<p>{{ note.text }}</p> 
 		</div>
@@ -31,6 +34,7 @@
  			<td>
  			<form action="/delete" method="post">
     			<input type="hidden" name="post_id" value="{{ note.key() }}" />
+    			<input type="hidden" name="current_page" value="{{ currpage }}" />
     			<input class="btn-medium btn-danger" type="submit" value="delete"/>
  			</form>
  			</td>

@@ -22,6 +22,9 @@
 			});
 	    	</script> 
 	    {%- endif -%}
+	    {%- if fulldate: -%}
+    		<span class='label label-info pull-right'>Last Saved: {{ fulldate.strftime('%Y-%m-%d %H:%M:%S') }}</span>
+        {% endif %}
 		<legend>Create Your Blog Post</legend>
 			<div class="control-group">
 			<div class="controls">
@@ -44,6 +47,13 @@
 						<input class="input-box-lrg" type="text" id="datepicker" name="date" value='{{ date }}'>
 						</td>
 						</tr>
+					 <tr>
+					 <td>
+					   <h5>Youtube URL:</h5>
+					  </td>
+					  </tr> 
+					   <tr><td><input class="input-box-lrg" type="text" id="id_vid" name="video" value="{{ youtube }}"/></td></tr>
+					   
 					</table>
 					{%- if image: -%}
 					    <div class="pull-right"><input type="button" class="btn-medium btn-danger" id="delete_image" value="Remove Image"></div>
@@ -56,39 +66,22 @@
 						</div>
 						<input type="hidden" name="id" value='{{ id }}'>
 					</div>
-					<br/>
-					<button class="btn-mini btn-inverse" style="margin:4px;" onclick="$('#id_text').tinymce().hide();return false;">Hide Panel</button>
-					<button class="btn-mini btn-inverse" style="margin:4px;" onclick="alert($('#id_text').html());return false;">Get HTML</button>
-					<button class="btn-mini btn-inverse" style="margin:4px;" onclick="alert($('#id_text').tinymce().selection.getContent());return false;">Get selected HTML</button>
-					<button class="btn-mini btn-inverse" style="margin:4px;" onclick="alert($('#id_text').tinymce().selection.getContent({format : 'text'}));return false;">Get selected text</button>
-					<button class="btn-mini btn-inverse" style="margin:4px;" onclick="$('#id_text').tinymce().execCommand('mceReplaceContent',false,'<b>{$selection}</b>');return false;">Remove formatting from selection</button>
-					<br/><br/>
-					<table class="pull-right">
+						<table>
 					{%- if not image:-%}
 					   <tr>
-					   <td>
 					   	<h5>Upload a Picture:</h5>
-					   </td>
-					   <td>
 					     <input class="input-file" style="margin-top: 2px;" type="file" name="file" id="fileInput" />
-					   </td>
 					   </tr>
 					  {%- endif -%}
 					   <tr>
-					   <td>
-					   <h5 style="margin-right: 5px;">Enter YouTube URL:</h5> 
-					   </td>
-					   <td><input class="input-box-lrg" type="text" id="id_vid" name="video" value="{{ youtube }}"/></td>
-					   </tr>
-						</table>
-						<br/>
-						<table>
-					   <tr>
 					   	<td>					
-							<input class="btn-large btn-primary" type="submit"name="post" value=Post style="margin-right: 10px;" /> 
+							<input class="btn-large btn-primary" type="submit"name="post" value=Post style="margin-right:5px" /> 
 						</td>
 						<td>
 							<input class="btn-large btn-inverse" type="submit" name="save" value=Save />
+						</td>
+						<td>
+						
 						</td>
 					   </tr>
 					</table>

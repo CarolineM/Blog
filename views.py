@@ -16,15 +16,15 @@ from google.appengine.ext import blobstore
 from google.appengine.ext import db
 from models import Posts
 from google.appengine.api import users
-from urlparse import urlparse, parse_qs
 from helpers import MediaHelper, PostFilter
 
-
+#TODO video input checking
 TEMPLATE_DIR = os.path.join(os.path.dirname(__file__), 'templates')
 jinja_environment = jinja2.Environment(loader = jinja2.FileSystemLoader(TEMPLATE_DIR), autoescape=False)
 
 
 class BaseHandler(webapp2.RequestHandler):
+    
     def render_template(
         self,
         filename,
@@ -37,11 +37,23 @@ class BaseHandler(webapp2.RequestHandler):
 
 
 class MainPage(BaseHandler, blobstore_handlers.BlobstoreDownloadHandler):
+    
     def get(self):
-        PostFilter().loadManPage()
-        
+        #TODO: make configurable in user settings
+        pageArgs = PostFilter().loadMainPage("SELECT * FROM Posts WHERE status='Published' ORDER BY date DESC")
+        pageArgs['currpage'] = "/"
+        self.render_template('index.html', pageArgs)
+
+class SavedPage(BaseHandler, blobstore_handlers.BlobstoreDownloadHandler):
+    
+    def get(self):
+        pageArgs = PostFilter().loadMainPage("SELECT * FROM Posts WHERE status='Saved' ORDER BY date DESC")
+        pageArgs['saved'] = True
+        pageArgs['currpage'] = "/saved"
+        self.render_template('index.html', pageArgs)
 
 class PostHandler(BaseHandler, blobstore_handlers.BlobstoreUploadHandler):
+    
     def post(self):
         upload_files = self.get_uploads('file')
         #TODO google.appengine.ext.blobstore.MAX_BLOB_FETCH_SIZE 
@@ -58,21 +70,14 @@ class PostHandler(BaseHandler, blobstore_handlers.BlobstoreUploadHandler):
             post_stat = "Published"
         elif is_save:
             post_stat = "Saved"
-        else: 
+        else:
+            #TODO Error 
             raise Exception('no form action given')
         
         post_sub = self.request.get('subject')
         post_content = self.request.get('content')
         vid_url = self.request.get('video')
-        date_str = self.request.get('date')
-        
-        #error checking TODO         
-        if post_sub == "":
-            self.send_error('title', "post.html")
-            return
-        elif post_content == "":
-            self.send_error('content', "post.html")
-            return        
+        date_str = self.request.get('date')      
             
         #make datetime
         if not date_str == None:
@@ -109,7 +114,11 @@ class PostHandler(BaseHandler, blobstore_handlers.BlobstoreUploadHandler):
             elif post.blob_key:
                 blobstore.delete(post.blob_key.key()) 
         post.put()
-        return webapp2.redirect('/')
+        if is_post:
+            self.redirect('/')
+        elif is_save:
+            self.redirect('/post?post_id=' + str(post.key()))
+        
 
     def get(self):
         if users.get_current_user():
@@ -124,7 +133,7 @@ class PostHandler(BaseHandler, blobstore_handlers.BlobstoreUploadHandler):
                 date = post.date.strftime('%m/%d/%Y')
                 self.render_template('post.html', {'text' : text, 'title' : title, 'id' : key, 
                                                    'upload_url' : upload, 'date' : date, 
-                                                   'youtube' : youtube, 'image' : image})
+                                                   'youtube' : youtube, 'image' : image, 'fulldate' : post.date})
             else:   
                 self.render_template('post.html', {'upload_url' : upload })
         else:
@@ -133,6 +142,7 @@ class PostHandler(BaseHandler, blobstore_handlers.BlobstoreUploadHandler):
                     
             
 class SignInHandler(BaseHandler):
+    
     def get(self):
         self.redirect(users.create_login_url(dest_url='/userchecker',
                     _auth_domain=None,
@@ -160,20 +170,24 @@ class UserCheckerHandler(BaseHandler):
                 return False
             
 class LogoutHandler(BaseHandler):
+    
     def get(self):
         message = self.request.get("message")
         self.render_template('logout.html', {'message' : message, 'users' : users })
                     
             
 class DeletePost(BaseHandler):
+    
     def post(self):
         post = db.get(self.request.get("post_id"))
+        page = self.request.get("current_page")
         if post.blob_key:
             blobstore.delete_async(post.blob_key.key())
         post.delete()
-        self.redirect('/')
+        self.redirect(page)
 
 class DeleteImage(BaseHandler):
+    
     def post(self):
         post_id = self.request.get("post_id")
         post = db.get(post_id)

@@ -1,6 +1,6 @@
 import webapp2
 from google.appengine.ext.webapp.util import run_wsgi_app
-from views import MainPage, PostHandler, SignInHandler, UserCheckerHandler, DeletePost, LogoutHandler, DeleteImage
+from views import MainPage, PostHandler, SignInHandler, UserCheckerHandler, DeletePost, LogoutHandler, DeleteImage, SavedPage
 
 
 application = webapp2.WSGIApplication([
@@ -10,7 +10,8 @@ application = webapp2.WSGIApplication([
         ('/userchecker', UserCheckerHandler),
         ('/logout', LogoutHandler),
         ('/delete', DeletePost),
-        ('/delete_image', DeleteImage)
+        ('/delete_image', DeleteImage),
+        ('/saved', SavedPage)
         ],
         debug=True)
 
