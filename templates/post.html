@@ -5,9 +5,23 @@
 	    		$("#id_text_tbl").css("width", "100%")
 	    	});
 	    	$(function() {
+	    		jQuery('#delete_image').click( function () {
+	    			$.post("/delete_image", {post_id: '{{ id }}'},
+	    		    	function(arg)
+	    		    	{
+	    		    		location.reload();
+	    		    	}
+	    			)
+	    		} );
+	    		});
+	    </script>
+	    {%- if not date:-%}
+	    	<script>
+	    	$(function() {
 				$( "#datepicker" ).datepicker("setDate", new Date());
 			});
-	    </script> 
+	    	</script> 
+	    {%- endif -%}
 		<legend>Create Your Blog Post</legend>
 			<div class="control-group">
 			<div class="controls">
@@ -27,10 +41,14 @@
 					  <input class="input-box-lrg" type="text" value='{{ title }}' name="subject" id="id_title" style="margin-right: 15px;"/>
 					 </td>
 					 <td>
-						<input class="input-box-lrg" type="text" id="datepicker">
+						<input class="input-box-lrg" type="text" id="datepicker" name="date" value='{{ date }}'>
 						</td>
 						</tr>
-					</table>	
+					</table>
+					{%- if image: -%}
+					    <div class="pull-right"><input type="button" class="btn-medium btn-danger" id="delete_image" value="Remove Image"></div>
+						<p align="center"><img src="{{ image }}" alt="banner" style="margin:auto; "/></p>
+					{% endif %}	
 					<h4>Post:</h4>
 					<div class="boxsizingBorder">
 						<div>
@@ -46,6 +64,7 @@
 					<button class="btn-mini btn-inverse" style="margin:4px;" onclick="$('#id_text').tinymce().execCommand('mceReplaceContent',false,'<b>{$selection}</b>');return false;">Remove formatting from selection</button>
 					<br/><br/>
 					<table class="pull-right">
+					{%- if not image:-%}
 					   <tr>
 					   <td>
 					   	<h5>Upload a Picture:</h5>
@@ -54,11 +73,12 @@
 					     <input class="input-file" style="margin-top: 2px;" type="file" name="file" id="fileInput" />
 					   </td>
 					   </tr>
+					  {%- endif -%}
 					   <tr>
 					   <td>
 					   <h5 style="margin-right: 5px;">Enter YouTube URL:</h5> 
 					   </td>
-					   <td><input class="input-box-lrg" type="text" id="id_vid" name="video" /></td>
+					   <td><input class="input-box-lrg" type="text" id="id_vid" name="video" value="{{ youtube }}"/></td>
 					   </tr>
 						</table>
 						<br/>

@@ -9,14 +9,15 @@ import webapp2
 import jinja2
 import os
 import re
-import operator
+from datetime import datetime
+import time
 from google.appengine.ext.webapp import blobstore_handlers
 from google.appengine.ext import blobstore
 from google.appengine.ext import db
 from models import Posts
-from google.appengine.api import images
 from google.appengine.api import users
 from urlparse import urlparse, parse_qs
+from helpers import MediaHelper, PostFilter
 
 
 TEMPLATE_DIR = os.path.join(os.path.dirname(__file__), 'templates')
@@ -37,35 +38,21 @@ class BaseHandler(webapp2.RequestHandler):
 
 class MainPage(BaseHandler, blobstore_handlers.BlobstoreDownloadHandler):
     def get(self):
-        #TODO: paging
-        q = db.GqlQuery("SELECT * FROM Posts " +
-                        "ORDER BY date DESC")
-        posts = q.fetch(10)
-           
-        dictionary = {}
-        for post in posts:
-            if post.blob_key:
-                blob_url = images.get_serving_url(post.blob_key, size=None, crop=False, secure_url=None)
-            else:
-                blob_url = None
-            dictionary[post] = blob_url   
-        self.render_template('index.html', {'notes': posts, 'img' : dictionary  })
+        PostFilter().loadManPage()
         
 
 class PostHandler(BaseHandler, blobstore_handlers.BlobstoreUploadHandler):
-    def send_error(self, field, subject, content):
-        self.render_template('post.html', {})
-
     def post(self):
         upload_files = self.get_uploads('file')
+        #TODO google.appengine.ext.blobstore.MAX_BLOB_FETCH_SIZE 
         if upload_files:  
             blob_info = upload_files[0]
             blob_key = blob_info.key()
         else:
             blob_key = None 
              
-        is_post = self.request.POST.get('post', None) 
-        is_save = self.request.POST.get('save', None)
+        is_post = self.request.get('post', None) 
+        is_save = self.request.get('save', None)
         post_stat = ""
         if is_post:
             post_stat = "Published"
@@ -77,20 +64,23 @@ class PostHandler(BaseHandler, blobstore_handlers.BlobstoreUploadHandler):
         post_sub = self.request.get('subject')
         post_content = self.request.get('content')
         vid_url = self.request.get('video')
+        date_str = self.request.get('date')
         
-        #error checking          
+        #error checking TODO         
         if post_sub == "":
             self.send_error('title', "post.html")
             return
         elif post_content == "":
             self.send_error('content', "post.html")
-            return
-        
-        #extract vid id
-        if vid_url:
-            vid = parse_qs(urlparse(vid_url).query)['v'][0]
+            return        
+            
+        #make datetime
+        if not date_str == None:
+            date = datetime.strptime(date_str,'%m/%d/%Y')
+            time = datetime.time(datetime.now())
+            dt = datetime.combine(date, time)
         else:
-            vid = None
+            dt = None
         
         #no errors, so save/update post
         if not self.request.POST.get('id', None):
@@ -98,37 +88,45 @@ class PostHandler(BaseHandler, blobstore_handlers.BlobstoreUploadHandler):
                   title=post_sub,
                   text=post_content,
                   status=post_stat,
-                  video_id=vid,
-                  blob_key=blob_key   
+                  video_url=vid_url,
+                  blob_key=blob_key,
+                  date=dt   
                   )
+        #editing
         else:
             post = db.get(self.request.get('id'))
             post.title = post_sub
             post.text = post_content
             post.status = post_stat
-            if blob_key:
-                #TODO: delete BlobInfo.get(post.blob_key) 
-                post.blob_key=blob_key  
-                                  
+            post.video_url=vid_url
+            post.date=dt
+            if blob_key and post.blob_key:
+                if not post.blob_key == blob_key:
+                    blobstore.delete(post.blob_key.key())  
+                    post.blob_key=blob_key
+            elif blob_key:
+                post.blob_key = blob_key
+            elif post.blob_key:
+                blobstore.delete(post.blob_key.key()) 
         post.put()
         return webapp2.redirect('/')
 
     def get(self):
         if users.get_current_user():
             upload = blobstore.create_upload_url('/post')
-            if self.request.GET.get('id', None):
-                key = self.request.get('id')
+            if self.request.GET.get('post_id', None):
+                key = self.request.get('post_id')
                 post = db.get(key)
                 text = post.text
                 title = post.title
-                pic_upload_title = "Change Picture"
-                vid_upload_title = "Change Video"
+                youtube = post.video_url
+                image = MediaHelper().getImageURL(post.blob_key)
+                date = post.date.strftime('%m/%d/%Y')
                 self.render_template('post.html', {'text' : text, 'title' : title, 'id' : key, 
-                                               'picUploadLabel' : pic_upload_title, 'vidUploadLabel' : vid_upload_title, 'upload_url' : upload })
-            else:
-                pic_upload_title = "Upload Picture"
-                vid_upload_title = "Upload Video"     
-                self.render_template('post.html', {'picUploadLabel' : pic_upload_title, 'vidUploadLabel' : vid_upload_title,'upload_url' : upload })
+                                                   'upload_url' : upload, 'date' : date, 
+                                                   'youtube' : youtube, 'image' : image})
+            else:   
+                self.render_template('post.html', {'upload_url' : upload })
         else:
             message= "You must login to access this page".encode("utf8")
             self.redirect('/logout?message=' + message)
@@ -168,8 +166,21 @@ class LogoutHandler(BaseHandler):
                     
             
 class DeletePost(BaseHandler):
-    def get(self, note_id):
-        iden = int(note_id)
-        note = db.get(db.Key.from_path('Notes', iden))
-        db.delete(note)
-        return webapp2.redirect('/')
+    def post(self):
+        post = db.get(self.request.get("post_id"))
+        if post.blob_key:
+            blobstore.delete_async(post.blob_key.key())
+        post.delete()
+        self.redirect('/')
+
+class DeleteImage(BaseHandler):
+    def post(self):
+        post_id = self.request.get("post_id")
+        post = db.get(post_id)
+        if post.blob_key:
+            blobstore.delete_async(post.blob_key.key())
+            post.blob_key=None
+            post.put()
+
+
+        

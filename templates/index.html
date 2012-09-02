@@ -7,19 +7,35 @@
 		<div class="hero-unit">
 			<h1>{{ note.title }}</h1>
 			{%- if img[note]: -%}
-				<p align="center"><img src="{{ notes[note] }}" alt="banner" style="margin:auto; margin-bottom:20px;"/></p>
+				<p align="center"><img src="{{ img[note] }}" alt="banner" style="margin:auto; margin-bottom:20px;"/></p>
 			{% endif %}
-			{%- if note.video_id -%}
-			  <p align="center"><iframe width="95%" height="360" style="margin:auto;" frameborder="0" src="http://www.youtube.com/embed/{{ note.video_id }}?feature=player_embedded" allowfullscreen></iframe></p>
+			{%- if video -%}
+			  <p align="center"><iframe width="95%" height="360" style="margin:auto;" frameborder="0" src="http://www.youtube.com/embed/{{ video }}?feature=player_embedded" allowfullscreen></iframe></p>
 			{% endif %}
 			<p>{{ note.text }}</p> 
 		</div>
 		<div class="pull-right" style="color:#999999;">
-    	Created: {{ note.date.strftime('%Y-%m-%d')  }} TODO: Status: {{ note.status }}
+		{%- if note.date: -%}
+    		Created: {{ note.date.strftime('%Y-%m-%d')  }} TODO: Status: {{ note.status }}
+    	{% endif %}
  		</div>
-		 <form action="/post" method="get">
-    		<input type="hidden" name="id" value="{{ note.key() }}" />
-    		<input class="btn-mini btn-inverse" type="submit" value="edit"/>
- 		</form>
+ 		{%- if users.get_current_user(): -%} 
+ 		<table>
+ 		<tr>
+ 		<td>
+		 	<form action="/post" method="get">
+    			<input type="hidden" name="post_id" value="{{ note.key() }}" />
+    			<input class="btn-medium btn-inverse" type="submit" value="edit"/>
+ 			</form>
+ 			</td>
+ 			<td>
+ 			<form action="/delete" method="post">
+    			<input type="hidden" name="post_id" value="{{ note.key() }}" />
+    			<input class="btn-medium btn-danger" type="submit" value="delete"/>
+ 			</form>
+ 			</td>
+ 			</tr>
+ 		</table>
+ 		{% endif %}
 {% endfor %}
 {% endblock %}
