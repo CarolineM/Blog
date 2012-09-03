@@ -37,59 +37,150 @@ class BaseHandler(webapp2.RequestHandler):
 
 
 class MainPage(BaseHandler, blobstore_handlers.BlobstoreDownloadHandler):
-    
+        
     def get(self):
-        #TODO: make configurable in user settings
-        pageArgs = PostFilter().loadMainPage("SELECT * FROM Posts WHERE status='Published' ORDER BY date DESC")
+        pfilter = PostFilter()
+        pageArgs = pfilter.loadMainPage(False, self.request.get("pg"))
         pageArgs['currpage'] = "/"
         self.render_template('index.html', pageArgs)
+
+class AllPage(BaseHandler, blobstore_handlers.BlobstoreDownloadHandler):
+    def get(self):
+        if users.get_current_user():
+            pageArgs = PostFilter().loadMainPage("all", self.request.get("pg"))
+            pageArgs['currpage'] = "/all"
+            self.render_template('index.html', pageArgs)
+        else:
+            message= "You must login to access this page".encode("utf8")
+            self.redirect('/logout?message=' + message)
 
 class SavedPage(BaseHandler, blobstore_handlers.BlobstoreDownloadHandler):
     
     def get(self):
-        pageArgs = PostFilter().loadMainPage("SELECT * FROM Posts WHERE status='Saved' ORDER BY date DESC")
+        pageArgs = PostFilter().loadMainPage(False, self.request.get("pg"), True)
         pageArgs['saved'] = True
         pageArgs['currpage'] = "/saved"
         self.render_template('index.html', pageArgs)
 
+class ESLPage(BaseHandler, blobstore_handlers.BlobstoreDownloadHandler):
+    
+    def get(self):
+        pageArgs = PostFilter().loadMainPage("esl_page", self.request.get("pg"))
+        pageArgs['currpage'] = "/esl"
+        self.render_template('index.html', pageArgs)
+
+class LifestylePage(BaseHandler, blobstore_handlers.BlobstoreDownloadHandler):
+    
+    def get(self):
+        pageArgs = PostFilter().loadMainPage("life_page", self.request.get("pg"))
+        pageArgs['currpage'] = "/lifestyle"
+        self.render_template('index.html', pageArgs)
+
+class PhilosophyPage(BaseHandler, blobstore_handlers.BlobstoreDownloadHandler):
+    
+    def get(self):
+        pageArgs = PostFilter().loadMainPage("phil_page", self.request.get("pg"))
+        pageArgs['currpage'] = "/philosophy"
+        self.render_template('index.html', pageArgs)
+
+class GeneralPage(BaseHandler, blobstore_handlers.BlobstoreDownloadHandler):
+    
+    def get(self):
+        pageArgs = PostFilter().loadMainPage("gen_page", self.request.get("pg"))
+        pageArgs['currpage'] = "/general"
+        self.render_template('index.html', pageArgs)
+
+class DietPage(BaseHandler, blobstore_handlers.BlobstoreDownloadHandler):
+    
+    def get(self):
+        pageArgs = PostFilter().loadMainPage("de_page", self.request.get("pg"))
+        pageArgs['currpage'] = "/diet_and_excercise"
+        self.render_template('index.html', pageArgs)
+
+class ProfilePage(BaseHandler, blobstore_handlers.BlobstoreDownloadHandler):
+    
+    def get(self):
+        if users.get_current_user():
+            pf = PostFilter()
+            self.render_template('profile.html', {'pagesize' : PostFilter.page_size, "totalposts" : pf.totalPosts(), "default" : PostFilter.mainarea})
+        else:
+            message= "You must login to access this page".encode("utf8")
+            self.redirect('/logout?message=' + message)
+
+    def post(self):
+        if users.get_current_user():
+            max_page = str(self.request.get("max"))
+            mainpage = self.request.get("radio")
+            pf = PostFilter()
+            if max_page and max_page.isdigit():
+                pf.setPagesize(pf, int(max_page))
+                pf.setMainarea(pf, mainpage)
+            self.render_template('profile.html', {'pagesize' : PostFilter.page_size, "totalposts" : pf.totalPosts(), "default" : PostFilter.mainarea})
+        else:
+            message= "You must login to access this page".encode("utf8")
+            self.redirect('/logout?message=' + message)
+
 class PostHandler(BaseHandler, blobstore_handlers.BlobstoreUploadHandler):
     
+    def setPageTags(self, post):
+        if self.request.get('esl'):
+            post.esl_page = True
+        else:
+            post.esl_page = False
+        if self.request.get('gen'):
+            post.gen_page = True
+        else:
+            post.gen_page = False
+        if self.request.get('life'):
+            post.life_page = True
+        else:
+            post.life_page = False
+        if self.request.get('de'):
+            post.de_page = True
+        else:
+            post.de_page = False
+        if self.request.get('phil'):
+            post.phil_page = True
+        else:
+            post.phil_page = False
+
     def post(self):
-        upload_files = self.get_uploads('file')
-        #TODO google.appengine.ext.blobstore.MAX_BLOB_FETCH_SIZE 
-        if upload_files:  
-            blob_info = upload_files[0]
-            blob_key = blob_info.key()
-        else:
-            blob_key = None 
+        if users.get_current_user():
+            upload_files = self.get_uploads('file')
+            #TODO google.appengine.ext.blobstore.MAX_BLOB_FETCH_SIZE 
+            if upload_files:  
+                blob_info = upload_files[0]
+                blob_key = blob_info.key()
+            else:
+                blob_key = None 
              
-        is_post = self.request.get('post', None) 
-        is_save = self.request.get('save', None)
-        post_stat = ""
-        if is_post:
-            post_stat = "Published"
-        elif is_save:
-            post_stat = "Saved"
-        else:
+            is_post = self.request.get('post', None) 
+            is_save = self.request.get('save', None)
+            post_stat = ""
+            if is_post:
+                post_stat = "Published"
+            elif is_save:
+                post_stat = "Saved"
+            else:
             #TODO Error 
-            raise Exception('no form action given')
+                raise Exception('no form action given')
         
-        post_sub = self.request.get('subject')
-        post_content = self.request.get('content')
-        vid_url = self.request.get('video')
-        date_str = self.request.get('date')      
-            
-        #make datetime
-        if not date_str == None:
-            date = datetime.strptime(date_str,'%m/%d/%Y')
-            time = datetime.time(datetime.now())
-            dt = datetime.combine(date, time)
-        else:
-            dt = None
+            post_sub = self.request.get('subject')
+            post_content = self.request.get('content')
+            vid_url = self.request.get('video')
+            date_str = self.request.get('date')
         
-        #no errors, so save/update post
-        if not self.request.POST.get('id', None):
-            post = Posts(
+            #make datetime
+            if not date_str == None:
+                date = datetime.strptime(date_str,'%m/%d/%Y')
+                time = datetime.time(datetime.now())
+                dt = datetime.combine(date, time)
+            else:
+                dt = None
+        
+            #no errors, so save/update post
+            if not self.request.POST.get('id', None):
+                post = Posts(
                   title=post_sub,
                   text=post_content,
                   status=post_stat,
@@ -97,27 +188,32 @@ class PostHandler(BaseHandler, blobstore_handlers.BlobstoreUploadHandler):
                   blob_key=blob_key,
                   date=dt   
                   )
-        #editing
+            #editing
+            else:
+                post = db.get(self.request.get('id'))
+                post.title = post_sub
+                post.text = post_content
+                post.status = post_stat
+                post.video_url=vid_url
+                post.date=dt
+                if blob_key and post.blob_key:
+                    if not post.blob_key == blob_key:
+                        blobstore.delete(post.blob_key.key())  
+                        post.blob_key=blob_key
+                    elif blob_key:
+                        post.blob_key = blob_key
+                    elif post.blob_key:
+                        blobstore.delete(post.blob_key.key())
+        
+            self.setPageTags(post) 
+            post.put()
+            if is_post:
+                self.redirect('/')
+            elif is_save:
+                self.redirect('/post?post_id=' + str(post.key()))
         else:
-            post = db.get(self.request.get('id'))
-            post.title = post_sub
-            post.text = post_content
-            post.status = post_stat
-            post.video_url=vid_url
-            post.date=dt
-            if blob_key and post.blob_key:
-                if not post.blob_key == blob_key:
-                    blobstore.delete(post.blob_key.key())  
-                    post.blob_key=blob_key
-            elif blob_key:
-                post.blob_key = blob_key
-            elif post.blob_key:
-                blobstore.delete(post.blob_key.key()) 
-        post.put()
-        if is_post:
-            self.redirect('/')
-        elif is_save:
-            self.redirect('/post?post_id=' + str(post.key()))
+            message= "You must login to access this page".encode("utf8")
+            self.redirect('/logout?message=' + message)
         
 
     def get(self):
@@ -133,7 +229,10 @@ class PostHandler(BaseHandler, blobstore_handlers.BlobstoreUploadHandler):
                 date = post.date.strftime('%m/%d/%Y')
                 self.render_template('post.html', {'text' : text, 'title' : title, 'id' : key, 
                                                    'upload_url' : upload, 'date' : date, 
-                                                   'youtube' : youtube, 'image' : image, 'fulldate' : post.date})
+                                                   'youtube' : youtube, 'image' : image, 
+                                                   'fulldate' : post.date, 'esl' : post.esl_page,
+                                                   'gen' : post.gen_page, 'life' : post.life_page,
+                                                   'de' : post.de_page, 'phil' : post.phil_page})
             else:   
                 self.render_template('post.html', {'upload_url' : upload })
         else:
@@ -179,22 +278,30 @@ class LogoutHandler(BaseHandler):
 class DeletePost(BaseHandler):
     
     def post(self):
-        post = db.get(self.request.get("post_id"))
-        page = self.request.get("current_page")
-        if post.blob_key:
-            blobstore.delete_async(post.blob_key.key())
-        post.delete()
-        self.redirect(page)
+        if users.get_current_user():
+            post = db.get(self.request.get("post_id"))
+            page = self.request.get("current_page")
+            if post.blob_key:
+                blobstore.delete_async(post.blob_key.key())
+            post.delete()
+            self.redirect(page)
+        else:
+            url = users.CreateLogoutURL('/logout?message=' + self.message, _auth_domain=None)
+            self.redirect(url)
 
 class DeleteImage(BaseHandler):
     
     def post(self):
-        post_id = self.request.get("post_id")
-        post = db.get(post_id)
-        if post.blob_key:
-            blobstore.delete_async(post.blob_key.key())
-            post.blob_key=None
-            post.put()
+        if users.get_current_user():
+            post_id = self.request.get("post_id")
+            post = db.get(post_id)
+            if post.blob_key:
+                blobstore.delete_async(post.blob_key.key())
+                post.blob_key=None
+                post.put()
+        else:
+            url = users.CreateLogoutURL('/logout?message=' + self.message, _auth_domain=None)
+            self.redirect(url)
 
 
         

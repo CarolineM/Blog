@@ -9,6 +9,7 @@
 {% for note in notes %}
 		<div class="hero-unit">
 			<h1>{{ note.title }}</h1>
+			<hr>
 			{%- if img[note]: -%}
 				<p align="center"><img src="{{ img[note] }}" alt="banner" style="margin:auto; margin-bottom:20px;"/></p>
 			{% endif %}
@@ -19,7 +20,7 @@
 		</div>
 		<div class="pull-right" style="color:#999999;">
 		{%- if note.date: -%}
-    		Created: {{ note.date.strftime('%Y-%m-%d')  }} TODO: Status: {{ note.status }}
+    		Created: {{ note.date.strftime('%Y-%m-%d')  }}
     	{% endif %}
  		</div>
  		{%- if users.get_current_user(): -%} 
@@ -41,5 +42,20 @@
  			</tr>
  		</table>
  		{% endif %}
+ 		<br><br>
 {% endfor %}
+{%- if notes -%}
+ 			<ul class="pager">
+  			<li class="{%- if not isPrev -%} previous disabled {% endif %}
+  					   {%- if isPrev -%} previous {% endif %}">
+    		{%- if isPrev -%}<a href="{{ currpage }}?pg={{ pagenum - 1 }}">&larr; Newer</a>{% endif %}
+    		{%- if not isPrev -%}<a href="#">&larr; Newer</a>{% endif %}
+ 			 </li>
+  			 <li class="{%- if not isNext -%} next disabled {% endif %}
+  					   {%- if isNext -%} next {% endif %}">
+    		{%- if isNext -%}<a href="{{ currpage }}?pg={{ pagenum + 1 }}">Older &rarr;</a>{% endif %}
+    		{%- if not isNext -%}<a href="#">Older &rarr;</a>{% endif %}
+  		</li>
+		</ul>
+{%- endif -%}
 {% endblock %}

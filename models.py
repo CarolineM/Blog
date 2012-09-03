@@ -13,13 +13,12 @@ class Posts(db.Model):
     title = db.StringProperty()
     text = db.TextProperty()
     status = db.StringProperty()
-    tags = db.StringProperty()
     date = db.DateTimeProperty(default=datetime.today())
     video_url = db.StringProperty()
     blob_key = blobstore.BlobReferenceProperty(default=None)
+    esl_page = db.BooleanProperty(default=False)
+    life_page = db.BooleanProperty(default=False)
+    de_page = db.BooleanProperty(default=False)
+    phil_page = db.BooleanProperty(default=False)
+    gen_page = db.BooleanProperty(default=False)
     
-class Comments(db.Model):
-
-    author = db.StringProperty(required = True)
-    text = db.StringProperty(multiline=True, required = True)
-    date = db.DateTimeProperty(auto_now_add=True)

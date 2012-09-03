@@ -16,7 +16,7 @@
 	    		});
 	    </script>
 	    {%- if not date:-%}
-	    	<script>
+	    	<script type="text/javascript">
 	    	$(function() {
 				$( "#datepicker" ).datepicker("setDate", new Date());
 			});
@@ -49,7 +49,7 @@
 						</tr>
 					 <tr>
 					 <td>
-					   <h5>Youtube URL:</h5>
+					   <h4>Youtube URL:</h4>
 					  </td>
 					  </tr> 
 					   <tr><td><input class="input-box-lrg" type="text" id="id_vid" name="video" value="{{ youtube }}"/></td></tr>
@@ -66,25 +66,46 @@
 						</div>
 						<input type="hidden" name="id" value='{{ id }}'>
 					</div>
-						<table>
-					{%- if not image:-%}
-					   <tr>
-					   	<h5>Upload a Picture:</h5>
-					     <input class="input-file" style="margin-top: 2px;" type="file" name="file" id="fileInput" />
-					   </tr>
-					  {%- endif -%}
-					   <tr>
-					   	<td>					
-							<input class="btn-large btn-primary" type="submit"name="post" value=Post style="margin-right:5px" /> 
-						</td>
-						<td>
-							<input class="btn-large btn-inverse" type="submit" name="save" value=Save />
-						</td>
-						<td>
-						
-						</td>
-					   </tr>
-					</table>
+					<br>
+					<div class="pull-right">
+			<div class='file-checkbox'>
+			{%- if not image:-%}
+              <label><b>Upload a Picture</b></label>
+              <input class='file' type='file' name='file' id="fileInput" />
+              	{%- endif -%}
+              	<br>
+                {%- if esl -%} <input checked='checked' type='checkbox' name='esl' value='esl'/>{% endif %}
+                {%- if not esl -%} <input type='checkbox' name='esl' value='esl'/>{% endif %}
+                ESL
+              <label>
+                {%- if not life -%}<input type='checkbox' name='life' value="life"/>{% endif %}
+                {%- if life -%}<input checked='checked' type='checkbox' name='life' value="life"/>{% endif %}
+                Lifestyle
+              </label>
+              <label>
+                {%- if not de -%}<input type='checkbox' name='de' value="de"/>{% endif %}
+                {%- if de -%}<input checked='checked' type='checkbox' name='de' value="de"/>{% endif %}
+                Diet and Exercise
+              </label>
+               <label>
+                {%- if not phil -%}<input type='checkbox' name='phil' value="phil"/>{% endif %}
+                {%- if phil -%}<input checked='checked' type='checkbox' name='phil' value="phil"/>{% endif %}
+                Philosophy
+              </label>
+               <label>
+                {%- if not gen -%}<input type='checkbox' name='gen' value="gen"/>{% endif %}
+                {%- if gen -%}<input checked='checked' type='checkbox' name='gen' value="gen"/>{% endif %}
+                General
+              </label>
+              </div>
+            </div>
+            <br> 		<br>
+            <br> <br> <br> <br><br> 
+		 <input class="btn-large btn-primary" type="submit"name="post" value=Post style="margin-right:5px;" /> 
+
+		<input class="btn-large btn-inverse" type="submit" name="save" value=Save />
+		
+
 				</form>
 			</div>
 			</div>

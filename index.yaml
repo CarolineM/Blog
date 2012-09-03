@@ -12,6 +12,48 @@ indexes:
 
 - kind: Posts
   properties:
+  - name: de_page
+  - name: status
+  - name: date
+    direction: desc
+
+- kind: Posts
+  properties:
+  - name: esl
+  - name: status
+  - name: date
+    direction: desc
+
+- kind: Posts
+  properties:
+  - name: esl_page
+  - name: status
+  - name: date
+    direction: desc
+
+- kind: Posts
+  properties:
+  - name: gen_page
+  - name: status
+  - name: date
+    direction: desc
+
+- kind: Posts
+  properties:
+  - name: life_page
+  - name: status
+  - name: date
+    direction: desc
+
+- kind: Posts
+  properties:
+  - name: phil_page
+  - name: status
+  - name: date
+    direction: desc
+
+- kind: Posts
+  properties:
   - name: status
   - name: date
     direction: desc
