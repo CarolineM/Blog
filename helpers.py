@@ -42,7 +42,7 @@ class PostFilter():
         if not area:
             area = self.mainarea
         
-        if area == 'all':
+        if area == 'all' and not saved:
             q = db.GqlQuery("SELECT * FROM Posts WHERE status='Published' ORDER BY date DESC")
         elif not saved:
             q = db.GqlQuery("SELECT * FROM Posts WHERE status='Published' AND " + area + "=TRUE ORDER BY date DESC")

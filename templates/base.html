@@ -70,9 +70,6 @@
       <div class="navbar-inner">
         <div class="container-fluid">
           <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
           </a>
           <a class="brand" href="#">Adriana English</a>
           {%- if users.get_current_user(): -%} 
@@ -90,10 +87,16 @@
           {% endif %}
           <div class="nav-collapse">
             <ul class="nav">
-              <li class="active"><a href="/">Home</a></li>
+            {%- if currpage == '/': -%}<li class='active'>{% endif %}
+            {%- if not currpage == '/': -%}<li>{% endif %}
+              <a href="/">Home</a></li>
               	{%- if users.get_current_user(): -%}
-              		<li><a href="/post">New Post</a></li>
-              		<li><a href="/saved">Saved Posts</a></li>
+              		{%- if currpage == '/post': -%}<li class='active'>{% endif %}
+              		{%- if not currpage == '/post': -%}<li>{% endif %}
+              		<a href="/post">New Post</a></li>
+              		{%- if currpage == '/saved': -%}<li class='active'>{% endif %}
+              		{%- if not currpage == '/saved': -%}<li>{% endif %}
+              		<a href="/saved">Saved Posts</a></li>
               	{% endif %}
             </ul>
           </div><!--/.nav-collapse -->
@@ -106,14 +109,28 @@
           <div class="well sidebar-nav">
             <ul class="nav nav-list">
               <li class="nav-header">Adriana English</li>
-              <li class="active"><a href="esl"><i class="icon-cheveron-right"></i>ESL Lessons</a></li>
-              <li><a href="/lifestyle"><i class="icon-cheveron-right"></i>Lifestyle</a></li>
-              <li><a href="/diet_and_exercise"><i class="icon-cheveron-right"></i>Diet and Exercise</a></li>
-              <li><a href="/philosophy"><i class="icon-cheveron-right"></i>Philosophy</a></li>
-              <li><a href="/general"><i class="icon-cheveron-right"></i>General</a></li>
+              {%- if currpage == '/esl': -%}<li class='active'>{% endif %}
+               {%- if not currpage == '/esl': -%}<li>{% endif %}
+              <a href="esl"><i class="icon-cheveron-right"></i>ESL Lessons</a></li>
+               {%- if currpage == '/lifestyle': -%}<li class='active'>{% endif %}
+              {%- if not currpage == '/lifestyle': -%}<li>{% endif %}
+              <a href="/lifestyle"><i class="icon-cheveron-right"></i>Lifestyle</a></li>
+              {%- if currpage == '/diet_and_excercise': -%}<li class='active'>{% endif %}
+              {%- if not currpage == '/diet_and_excercise': -%}<li>{% endif %}
+              <a href="/diet_and_exercise"><i class="icon-cheveron-right"></i>Diet and Exercise</a></li>
+              {%- if currpage == '/philosophy': -%}<li class='active'>{% endif %}
+              {%- if not currpage == '/philosophy': -%}<li>{% endif %}
+              <a href="/philosophy"><i class="icon-cheveron-right"></i>Philosophy</a></li>
+              {%- if currpage == '/general': -%}<li class='active'>{% endif %}
+              {%- if not currpage == '/general': -%}<li>{% endif %}
+              <a href="/general"><i class="icon-cheveron-right"></i>General</a></li>
               <li class="nav-header">About Me</li>
-              <li><a href="#"><i class="icon-cheveron-right"></i>About</a></li>
-              <li><a href="#"><i class="icon-cheveron-right"></i>Contact</a></li>
+              {%- if currpage == '/about': -%}<li class='active'>{% endif %}
+              {%- if not currpage == '/about': -%}<li>{% endif %}
+              <a href="/about"><i class="icon-cheveron-right"></i>About</a></li>
+              {%- if currpage == '/contact': -%}<li class='active'>{% endif %}
+              {%- if not currpage == '/contact': -%}<li>{% endif %}
+              <a href="/contact"><i class="icon-cheveron-right"></i>Contact</a></li>
             </ul>
           </div><!--/.well -->
         </div><!--/span-->

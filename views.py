@@ -36,7 +36,7 @@ class BaseHandler(webapp2.RequestHandler):
         self.response.out.write(template.render(**template_values))
 
 
-class MainPage(BaseHandler, blobstore_handlers.BlobstoreDownloadHandler):
+class MainPage(BaseHandler):
         
     def get(self):
         pfilter = PostFilter()
@@ -44,7 +44,7 @@ class MainPage(BaseHandler, blobstore_handlers.BlobstoreDownloadHandler):
         pageArgs['currpage'] = "/"
         self.render_template('index.html', pageArgs)
 
-class AllPage(BaseHandler, blobstore_handlers.BlobstoreDownloadHandler):
+class AllPage(BaseHandler):
     def get(self):
         if users.get_current_user():
             pageArgs = PostFilter().loadMainPage("all", self.request.get("pg"))
@@ -54,7 +54,7 @@ class AllPage(BaseHandler, blobstore_handlers.BlobstoreDownloadHandler):
             message= "You must login to access this page".encode("utf8")
             self.redirect('/logout?message=' + message)
 
-class SavedPage(BaseHandler, blobstore_handlers.BlobstoreDownloadHandler):
+class SavedPage(BaseHandler):
     
     def get(self):
         pageArgs = PostFilter().loadMainPage(False, self.request.get("pg"), True)
@@ -62,47 +62,48 @@ class SavedPage(BaseHandler, blobstore_handlers.BlobstoreDownloadHandler):
         pageArgs['currpage'] = "/saved"
         self.render_template('index.html', pageArgs)
 
-class ESLPage(BaseHandler, blobstore_handlers.BlobstoreDownloadHandler):
+class ESLPage(BaseHandler):
     
     def get(self):
         pageArgs = PostFilter().loadMainPage("esl_page", self.request.get("pg"))
         pageArgs['currpage'] = "/esl"
         self.render_template('index.html', pageArgs)
 
-class LifestylePage(BaseHandler, blobstore_handlers.BlobstoreDownloadHandler):
+class LifestylePage(BaseHandler):
     
     def get(self):
         pageArgs = PostFilter().loadMainPage("life_page", self.request.get("pg"))
         pageArgs['currpage'] = "/lifestyle"
         self.render_template('index.html', pageArgs)
 
-class PhilosophyPage(BaseHandler, blobstore_handlers.BlobstoreDownloadHandler):
+class PhilosophyPage(BaseHandler):
     
     def get(self):
         pageArgs = PostFilter().loadMainPage("phil_page", self.request.get("pg"))
         pageArgs['currpage'] = "/philosophy"
         self.render_template('index.html', pageArgs)
 
-class GeneralPage(BaseHandler, blobstore_handlers.BlobstoreDownloadHandler):
+class GeneralPage(BaseHandler):
     
     def get(self):
         pageArgs = PostFilter().loadMainPage("gen_page", self.request.get("pg"))
         pageArgs['currpage'] = "/general"
         self.render_template('index.html', pageArgs)
 
-class DietPage(BaseHandler, blobstore_handlers.BlobstoreDownloadHandler):
+class DietPage(BaseHandler):
     
     def get(self):
         pageArgs = PostFilter().loadMainPage("de_page", self.request.get("pg"))
         pageArgs['currpage'] = "/diet_and_excercise"
         self.render_template('index.html', pageArgs)
 
-class ProfilePage(BaseHandler, blobstore_handlers.BlobstoreDownloadHandler):
+class ProfilePage(BaseHandler):
     
     def get(self):
         if users.get_current_user():
             pf = PostFilter()
-            self.render_template('profile.html', {'pagesize' : PostFilter.page_size, "totalposts" : pf.totalPosts(), "default" : PostFilter.mainarea})
+            self.render_template('profile.html', {'pagesize' : PostFilter.page_size, 
+                                                  "totalposts" : pf.totalPosts(), "default" : PostFilter.mainarea, 'currpage' : '/profile'})
         else:
             message= "You must login to access this page".encode("utf8")
             self.redirect('/logout?message=' + message)
@@ -115,10 +116,19 @@ class ProfilePage(BaseHandler, blobstore_handlers.BlobstoreDownloadHandler):
             if max_page and max_page.isdigit():
                 pf.setPagesize(pf, int(max_page))
                 pf.setMainarea(pf, mainpage)
-            self.render_template('profile.html', {'pagesize' : PostFilter.page_size, "totalposts" : pf.totalPosts(), "default" : PostFilter.mainarea})
+            self.render_template('profile.html', {'pagesize' : PostFilter.page_size, 
+                                                  "totalposts" : pf.totalPosts(), "default" : PostFilter.mainarea, 'currpage' : '/profile'})
         else:
             message= "You must login to access this page".encode("utf8")
             self.redirect('/logout?message=' + message)
+            
+class AboutPage(BaseHandler):
+    def get(self):
+        self.render_template('about.html', {'currpage' : '/about' })
+
+class ContactPage(BaseHandler):
+    def get(self):
+        self.render_template('contact.html', {'currpage' : '/contact' })
 
 class PostHandler(BaseHandler, blobstore_handlers.BlobstoreUploadHandler):
     
@@ -232,9 +242,10 @@ class PostHandler(BaseHandler, blobstore_handlers.BlobstoreUploadHandler):
                                                    'youtube' : youtube, 'image' : image, 
                                                    'fulldate' : post.date, 'esl' : post.esl_page,
                                                    'gen' : post.gen_page, 'life' : post.life_page,
-                                                   'de' : post.de_page, 'phil' : post.phil_page})
+                                                   'de' : post.de_page, 'phil' : post.phil_page, 
+                                                   'currpage' : '/post'})
             else:   
-                self.render_template('post.html', {'upload_url' : upload })
+                self.render_template('post.html', {'upload_url' : upload, 'currpage' : '/post' })
         else:
             message= "You must login to access this page".encode("utf8")
             self.redirect('/logout?message=' + message)
@@ -272,7 +283,7 @@ class LogoutHandler(BaseHandler):
     
     def get(self):
         message = self.request.get("message")
-        self.render_template('logout.html', {'message' : message, 'users' : users })
+        self.render_template('logout.html', {'message' : message, 'users' : users, 'currpage' : '/logout' })
                     
             
 class DeletePost(BaseHandler):
