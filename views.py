@@ -110,14 +110,19 @@ class ProfilePage(BaseHandler):
 
     def post(self):
         if users.get_current_user():
+            error_str = None
             max_page = str(self.request.get("max"))
             mainpage = self.request.get("radio")
             pf = PostFilter()
             if max_page and max_page.isdigit():
                 pf.setPagesize(pf, int(max_page))
                 pf.setMainarea(pf, mainpage)
+            else:
+                error_str = "<p>That is not a valid number.</p>"
             self.render_template('profile.html', {'pagesize' : PostFilter.page_size, 
-                                                  "totalposts" : pf.totalPosts(), "default" : PostFilter.mainarea, 'currpage' : '/profile'})
+                                                  "totalposts" : pf.totalPosts(), 
+                                                  "default" : PostFilter.mainarea, 
+                                                  'currpage' : '/profile', 'error' : error_str})
         else:
             message= "You must login to access this page".encode("utf8")
             self.redirect('/logout?message=' + message)
@@ -133,51 +138,60 @@ class ContactPage(BaseHandler):
 class PostHandler(BaseHandler, blobstore_handlers.BlobstoreUploadHandler):
     
     def setPageTags(self, post):
+        notEmpty = False
         if self.request.get('esl'):
             post.esl_page = True
+            notEmpty = True
         else:
             post.esl_page = False
         if self.request.get('gen'):
             post.gen_page = True
+            notEmpty = True
         else:
             post.gen_page = False
         if self.request.get('life'):
             post.life_page = True
+            notEmpty = True
         else:
             post.life_page = False
         if self.request.get('de'):
             post.de_page = True
+            notEmpty = True
         else:
             post.de_page = False
         if self.request.get('phil'):
             post.phil_page = True
+            notEmpty = True
         else:
             post.phil_page = False
+        return notEmpty
 
     def post(self):
         if users.get_current_user():
+            error_str = ""
+            #checking upload size
             upload_files = self.get_uploads('file')
-            #TODO google.appengine.ext.blobstore.MAX_BLOB_FETCH_SIZE 
+            if upload_files.__sizeof__() > blobstore.MAX_BLOB_FETCH_SIZE:
+                upload_files = None
+                error_str = error_str + "<p>Picture size is too large.</p>" 
+                
             if upload_files:  
                 blob_info = upload_files[0]
                 blob_key = blob_info.key()
             else:
                 blob_key = None 
-             
-            is_post = self.request.get('post', None) 
-            is_save = self.request.get('save', None)
-            post_stat = ""
-            if is_post:
-                post_stat = "Published"
-            elif is_save:
-                post_stat = "Saved"
-            else:
-            #TODO Error 
-                raise Exception('no form action given')
         
             post_sub = self.request.get('subject')
             post_content = self.request.get('content')
-            vid_url = self.request.get('video')
+            if self.request.get('video'): 
+                if MediaHelper().validate_vid_url(self.request.get('video')):
+                    vid_url = self.request.get('video')
+                else: 
+                    vid_url = None
+                    error_str = error_str + "<p>The youtube url you entered is invalid.</p>"
+            else:
+                vid_url = None
+                
             date_str = self.request.get('date')
         
             #make datetime
@@ -187,8 +201,16 @@ class PostHandler(BaseHandler, blobstore_handlers.BlobstoreUploadHandler):
                 dt = datetime.combine(date, time)
             else:
                 dt = None
+                
+            is_post = self.request.get('post', None)
+
+            post_stat = ""
+            if is_post:
+                post_stat = "Published"
+            else:
+                post_stat = "Saved"
         
-            #no errors, so save/update post
+            #save/update post
             if not self.request.POST.get('id', None):
                 post = Posts(
                   title=post_sub,
@@ -215,11 +237,19 @@ class PostHandler(BaseHandler, blobstore_handlers.BlobstoreUploadHandler):
                     elif post.blob_key:
                         blobstore.delete(post.blob_key.key())
         
-            self.setPageTags(post) 
+            if not self.setPageTags(post) and is_post:
+                error_str = error_str + "<p>Select at least one publish area.</p>" 
+                
+            #save is error    
+            if error_str:
+                post.status = "Saved"
+                
             post.put()
-            if is_post:
+            if error_str:
+                self.redirect('/post?post_id=' + str(post.key()) + "&error=" + error_str)
+            elif is_post:
                 self.redirect('/')
-            elif is_save:
+            else:
                 self.redirect('/post?post_id=' + str(post.key()))
         else:
             message= "You must login to access this page".encode("utf8")
@@ -231,6 +261,7 @@ class PostHandler(BaseHandler, blobstore_handlers.BlobstoreUploadHandler):
             upload = blobstore.create_upload_url('/post')
             if self.request.GET.get('post_id', None):
                 key = self.request.get('post_id')
+                error_str = self.request.get('error') 
                 post = db.get(key)
                 text = post.text
                 title = post.title
@@ -243,7 +274,7 @@ class PostHandler(BaseHandler, blobstore_handlers.BlobstoreUploadHandler):
                                                    'fulldate' : post.date, 'esl' : post.esl_page,
                                                    'gen' : post.gen_page, 'life' : post.life_page,
                                                    'de' : post.de_page, 'phil' : post.phil_page, 
-                                                   'currpage' : '/post'})
+                                                   'currpage' : '/post', 'error' : error_str})
             else:   
                 self.render_template('post.html', {'upload_url' : upload, 'currpage' : '/post' })
         else:

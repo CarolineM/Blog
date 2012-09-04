@@ -7,6 +7,7 @@ from google.appengine.ext import db
 from models import Posts
 from google.appengine.api import images
 from urlparse import urlparse, parse_qs
+from datetime import datetime
 
 class Callable:
 
@@ -25,6 +26,14 @@ class MediaHelper():
             return parse_qs(urlparse(url).query)['v'][0]
         else:
             return None
+    
+    #TODO hack
+    def validate_vid_url(self, url):
+        try:
+            parse_qs(urlparse(url).query)['v'][0]
+            return True
+        except:
+            return False        
         
 class PostFilter():
     mainarea = None

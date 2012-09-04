@@ -135,6 +135,9 @@
           </div><!--/.well -->
         </div><!--/span-->
     <div class="span9">
+         {%- if error -%}
+        <span class="label span6 label-important">{{ error }}</span>
+         {% endif %}
         {% block content %}
         {% endblock %}
     </div>
