@@ -43,7 +43,7 @@ class PostFilter():
     def __init__(self):
         #init vars
         if not PostFilter.mainarea:
-            self.setMainarea(self, 'esl_page')
+            self.setMainarea(self, 'gen_page')
         if not PostFilter.page_size:
             self.setPagesize(self, 10)
     

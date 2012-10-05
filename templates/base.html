@@ -55,6 +55,7 @@
 				);
 
 			});
+			
 	        $(function(){
 	            $("input, textarea, select, button").uniform();
 	          });
@@ -71,7 +72,7 @@
         <div class="container-fluid">
           <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
           </a>
-          <a class="brand" href="#">Adriana English</a>
+          <a class="brand" href="/">Adriana English</a>
           {%- if users.get_current_user(): -%} 
           	<div class="btn-group pull-right">
                <a class="btn btn-inverse dropdown-toggle" data-toggle="dropdown" href="#">
@@ -128,9 +129,6 @@
               {%- if currpage == '/about': -%}<li class='active'>{% endif %}
               {%- if not currpage == '/about': -%}<li>{% endif %}
               <a href="/about"><i class="icon-cheveron-right"></i>About</a></li>
-              {%- if currpage == '/contact': -%}<li class='active'>{% endif %}
-              {%- if not currpage == '/contact': -%}<li>{% endif %}
-              <a href="/contact"><i class="icon-cheveron-right"></i>Contact</a></li>
             </ul>
           </div><!--/.well -->
         </div><!--/span-->
@@ -140,6 +138,9 @@
          {% endif %}
         {% block content %}
         {% endblock %}
+        {%- if success -%}
+        <span class="label span3 label-success">{{ success }}</span>
+         {% endif %}
     </div>
   </body>
 </html>

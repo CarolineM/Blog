@@ -1,6 +1,6 @@
 import webapp2
 from google.appengine.ext.webapp.util import run_wsgi_app
-from views import MainPage, PostHandler, SignInHandler, UserCheckerHandler, DeletePost, LogoutHandler, DeleteImage, SavedPage, ESLPage, LifestylePage, PhilosophyPage, GeneralPage, ProfilePage, DietPage, AllPage, AboutPage, ContactPage 
+from views import MainPage, PostHandler, SignInHandler, UserCheckerHandler, DeletePost, LogoutHandler, DeleteImage, SavedPage, ESLPage, LifestylePage, PhilosophyPage, GeneralPage, ProfilePage, DietPage, AllPage, AboutPage, ContactPage, Upload 
 
 
 application = webapp2.WSGIApplication([
@@ -21,6 +21,7 @@ application = webapp2.WSGIApplication([
         ('/all', AllPage),
         ('/about', AboutPage),
         ('/contact', ContactPage),
+        ('/upload', Upload)
         ],
         debug=True)
 

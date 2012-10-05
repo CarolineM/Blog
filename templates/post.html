@@ -14,6 +14,24 @@
 	    			)
 	    		} );
 	    		});
+	    	$(function() {
+	    		jQuery('#post').click( function () {
+		    		$.get("/upload", function(data) {
+		    			$("#posttype").val("POST");
+		    	    	$("#main_form").attr('action', data);
+		    	    	$("#main_form").submit();
+		    		});
+	    		});
+	    	});
+	    	$(function() {
+	    		jQuery('#save').click( function () {
+		    		$.get("/upload", function(data) {
+		    			$("#posttype").val("SAVE");
+		    	    	$("#main_form").attr('action', data);
+		    	    	$("#main_form").submit();
+		    		});
+	    		});
+	    	});
 	    	var _validFileExtensions = [".jpg", ".jpeg", ".bmp", ".gif", ".png"];
 
 	    	function Validate(oForm) {
@@ -43,7 +61,6 @@
 	    	    return true;
 	    	}
 	    	</script>
-	    </script>
 	    {%- if not date:-%}
 	    	<script type="text/javascript">
 	    	$(function() {
@@ -58,7 +75,7 @@
 			<div class="control-group">
 			<div class="controls">
 			<div class="row-fluid">
-				<form action='{{ upload_url }}' method="POST" class="well" 
+				<form action='/None' method="POST" class="well" 
 				id="main_form" enctype="multipart/form-data" onsubmit="return Validate(this);">
 				<table>
 				   <tr>
@@ -96,6 +113,7 @@
 						<textarea style="height: 350px; width: 100%;" name="content" id="id_text" class="tinymce">{{ text }}</textarea>
 						</div>
 						<input type="hidden" name="id" value='{{ id }}'>
+						<input type="hidden" id="posttype" name="posttype" value="caroline">
 					</div>
 					<br>
 					<div class="pull-right">
@@ -130,14 +148,12 @@
               </label>
               </div>
             </div>
-            <br> 		<br>
+            <br><br>
             <br> <br> <br> <br><br> 
-		 <input class="btn-large btn-primary" type="submit"name="post" value=Post style="margin-right:5px;" /> 
+		 <input class="btn btn-medium" value="Post" name="post" type="button" id="post" style="margin-right:5px;" /> 
+		 <input class="btn btn-medium" value="Save" name="save" type="button" id="save"/>
 
-		<input class="btn-large btn-inverse" type="submit" name="save" value=Save />
-		
-
-				</form>
+		</form>
 			</div>
 			</div>
 </div>

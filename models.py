@@ -22,3 +22,7 @@ class Posts(db.Model):
     phil_page = db.BooleanProperty(default=False)
     gen_page = db.BooleanProperty(default=False)
     
+class Home_Page(db.Model):
+    #todo - a better way to save the settings. this is not used yet
+    home_page = db.StringProperty(default="gen_page")
+    page_size = db.IntegerProperty(default=10)

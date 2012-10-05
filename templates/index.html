@@ -8,8 +8,7 @@
 {% endif %}
 {% for note in notes %}
 		<div class="hero-unit">
-			<h1>{{ note.title }}</h1>
-			<hr>
+			<h2>{{ note.title }}</h2>
 			{%- if img[note]: -%}
 				<p align="center"><img src="{{ img[note] }}" alt="banner" style="margin:auto; margin-bottom:20px;"/></p>
 			{% endif %}
