@@ -117,12 +117,14 @@ class ProfilePage(BaseHandler):
             if max_page and max_page.isdigit():
                 pf.setPagesize(pf, int(max_page))
                 pf.setMainarea(pf, mainpage)
+                success = "Success!"
             else:
                 error_str = "<p>That is not a valid number.</p>"
+                success = None
             self.render_template('profile.html', {'pagesize' : PostFilter.page_size, 
                                                   "totalposts" : pf.totalPosts(), 
                                                   "default" : PostFilter.mainarea, 
-                                                  'currpage' : '/profile', 'error' : error_str})
+                                                  'currpage' : '/profile', 'error' : error_str, 'success' : success})
         else:
             message= "You must login to access this page".encode("utf8")
             self.redirect('/logout?message=' + message)
@@ -202,11 +204,13 @@ class PostHandler(BaseHandler, blobstore_handlers.BlobstoreUploadHandler):
             else:
                 dt = None
                 
-            is_post = self.request.get('post', None)
+            posttype = self.request.get('posttype')
+            is_post = False
 
             post_stat = ""
-            if is_post:
+            if str(posttype) == 'POST':
                 post_stat = "Published"
+                is_post = True
             else:
                 post_stat = "Saved"
         
@@ -258,7 +262,7 @@ class PostHandler(BaseHandler, blobstore_handlers.BlobstoreUploadHandler):
 
     def get(self):
         if users.get_current_user():
-            upload = blobstore.create_upload_url('/post')
+            upload = '/upload'
             if self.request.GET.get('post_id', None):
                 key = self.request.get('post_id')
                 error_str = self.request.get('error') 
@@ -280,6 +284,10 @@ class PostHandler(BaseHandler, blobstore_handlers.BlobstoreUploadHandler):
         else:
             message= "You must login to access this page".encode("utf8")
             self.redirect('/logout?message=' + message)
+
+class Upload(BaseHandler, blobstore_handlers.BlobstoreUploadHandler):
+    def get(self): 
+        self.response.out.write(blobstore.create_upload_url('/post'))
                     
             
 class SignInHandler(BaseHandler):
