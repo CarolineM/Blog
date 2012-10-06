@@ -43,6 +43,20 @@ class MainPage(BaseHandler):
         pageArgs = pfilter.loadMainPage(False, self.request.get("pg"))
         pageArgs['currpage'] = "/"
         self.render_template('index.html', pageArgs)
+        
+class OnePost(BaseHandler):
+        
+    def get(self):
+        post = db.get(self.request.get('post_id'))
+        posts = [post]
+        dictImg = {}
+        dictVidId = {}
+        blob_url = MediaHelper().getImageURL(post.blob_key)
+        dictImg[post] = blob_url
+        dictVidId[post] = MediaHelper().parseYoutubeId(post.video_url)
+        self.render_template('index.html', {'notes': posts, 'img' : dictImg, 'video' : dictVidId, 
+                'pagenum' : 0, 'isNext' : False, 
+                'isPrev' : False})
 
 class SavedPage(BaseHandler):
     

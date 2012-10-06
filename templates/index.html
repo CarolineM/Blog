@@ -8,7 +8,7 @@
 {% endif %}
 {% for note in notes %}
 		<div class="hero-unit">
-			<h2>{{ note.title }}</h2>
+			<h2><a href='/single?post_id={{ note.key() }}'>{{ note.title }}</a></h2>
 			{%- if img[note]: -%}
 				<p align="center"><img src="{{ img[note] }}" alt="banner" style="margin:auto; margin-bottom:20px;"/></p>
 			{% endif %}
@@ -44,7 +44,7 @@
  		{% endif %}
  		<br><br>
 {% endfor %}
-{%- if notes -%}
+{%- if isNext or isPrev -%}
  			<ul class="pager">
   			<li class="{%- if not isPrev -%} previous disabled {% endif %}
   					   {%- if isPrev -%} previous {% endif %}">
