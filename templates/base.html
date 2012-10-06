@@ -1,7 +1,7 @@
 <html>
   <head>
   	<meta charset="utf-8">
-    <title>Adriana English</title>
+    <title>CarolineM Dev Blog</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="">
@@ -72,7 +72,7 @@
         <div class="container-fluid">
           <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
           </a>
-          <a class="brand" href="/">Adriana English</a>
+          <a class="brand" href="/">CarolineM DevBlog</a>
           {%- if users.get_current_user(): -%} 
           	<div class="btn-group pull-right">
                <a class="btn btn-inverse dropdown-toggle" data-toggle="dropdown" href="#">
@@ -80,8 +80,10 @@
               	<span class="caret"></span>
                </a>
                <ul class="dropdown-menu">
-              	<li><a href="/profile">Profile</a></li>
+              	<li><a href="/post">New Post</a></li>
+              	<li><a href="/saved">Saved Posts</a></li>
               	<li class="divider"></li>
+              	<li><a href="/profile">Profile</a></li>
               	<li><a href= {{ logout }} >Sign Out</a></li>
                </ul>
          	 </div>
@@ -91,47 +93,17 @@
             {%- if currpage == '/': -%}<li class='active'>{% endif %}
             {%- if not currpage == '/': -%}<li>{% endif %}
               <a href="/">Home</a></li>
+            {%- if currpage == '/about': -%}<li class='active'>{% endif %}
+            {%- if not currpage == '/about': -%}<li>{% endif %}
+            <a href="/about">About</a></li>
               	{%- if users.get_current_user(): -%}
-              		{%- if currpage == '/post': -%}<li class='active'>{% endif %}
-              		{%- if not currpage == '/post': -%}<li>{% endif %}
-              		<a href="/post">New Post</a></li>
-              		{%- if currpage == '/saved': -%}<li class='active'>{% endif %}
-              		{%- if not currpage == '/saved': -%}<li>{% endif %}
-              		<a href="/saved">Saved Posts</a></li>
               	{% endif %}
             </ul>
           </div><!--/.nav-collapse -->
         </div>
       </div>
     </div>
-        <div class="container-fluid">
-      <div class="row-fluid">
-        <div class="span3">
-          <div class="well sidebar-nav">
-            <ul class="nav nav-list">
-              <li class="nav-header">Adriana English</li>
-              {%- if currpage == '/esl': -%}<li class='active'>{% endif %}
-               {%- if not currpage == '/esl': -%}<li>{% endif %}
-              <a href="esl"><i class="icon-cheveron-right"></i>ESL Lessons</a></li>
-               {%- if currpage == '/lifestyle': -%}<li class='active'>{% endif %}
-              {%- if not currpage == '/lifestyle': -%}<li>{% endif %}
-              <a href="/lifestyle"><i class="icon-cheveron-right"></i>Lifestyle</a></li>
-              {%- if currpage == '/diet_and_excercise': -%}<li class='active'>{% endif %}
-              {%- if not currpage == '/diet_and_excercise': -%}<li>{% endif %}
-              <a href="/diet_and_exercise"><i class="icon-cheveron-right"></i>Diet and Exercise</a></li>
-              {%- if currpage == '/philosophy': -%}<li class='active'>{% endif %}
-              {%- if not currpage == '/philosophy': -%}<li>{% endif %}
-              <a href="/philosophy"><i class="icon-cheveron-right"></i>Philosophy</a></li>
-              {%- if currpage == '/general': -%}<li class='active'>{% endif %}
-              {%- if not currpage == '/general': -%}<li>{% endif %}
-              <a href="/general"><i class="icon-cheveron-right"></i>General</a></li>
-              <li class="nav-header">About Me</li>
-              {%- if currpage == '/about': -%}<li class='active'>{% endif %}
-              {%- if not currpage == '/about': -%}<li>{% endif %}
-              <a href="/about"><i class="icon-cheveron-right"></i>About</a></li>
-            </ul>
-          </div><!--/.well -->
-        </div><!--/span-->
+
     <div class="span9">
          {%- if error -%}
         <span class="label span6 label-important">{{ error }}</span>

@@ -7,7 +7,6 @@ from google.appengine.ext import db
 from models import Posts
 from google.appengine.api import images
 from urlparse import urlparse, parse_qs
-from datetime import datetime
 
 class Callable:
 
@@ -51,10 +50,8 @@ class PostFilter():
         if not area:
             area = self.mainarea
         
-        if area == 'all' and not saved:
+        if not saved:
             q = db.GqlQuery("SELECT * FROM Posts WHERE status='Published' ORDER BY date DESC")
-        elif not saved:
-            q = db.GqlQuery("SELECT * FROM Posts WHERE status='Published' AND " + area + "=TRUE ORDER BY date DESC")
         else:
             q = db.GqlQuery("SELECT * FROM Posts WHERE status='Saved' ORDER BY date DESC")
             

@@ -10,20 +10,6 @@
 	<form action="/profile" method="post">
 	<h3>Posts per page</h3>
 	<p>Each page can have a maximum of <input class="input-box-lg" type="text" value='{{ pagesize }}' name="max" id="max" style="margin:5px; length:10px"/> posts on it.</p>
-	<h3>Home Page</h3>
-	<p>The home page is set to:</p>
-     {%- if not default == "esl_page" -%}<label><input type="radio" name="radio" value="esl_page" />ESL Lessons</label>{% endif %}
-     {%- if default == "esl_page" -%}<label><input type="radio" name="radio" value="esl_page" checked="checked" />ESL Lessons</label>{% endif %}
-     {%- if not default == "life_page" -%}<label><input type="radio" name="radio" value="life_page"/>Lifestyle</label>{% endif %}
-     {%- if default == "life_page" -%}<label><input type="radio" name="radio" value="life_page" checked="checked"/>Lifestyle</label>{% endif %}
-     {%- if not default == "de_page" -%}<label><input type="radio" name="radio" value="de_page"/>Diet and Exercise</label>{% endif %}
-     {%- if default == "de_page" -%}<label><input type="radio" name="radio" value="de_page" checked="checked"/>Diet and Exercise</label>{% endif %}
-     {%- if not default == "phil_page" -%}<label><input type="radio" name="radio" value="phil_page"/>Philosophy</label>{% endif %}
-     {%- if default == "phil_page" -%}<label><input type="radio" name="radio" value="phil_page" checked="checked"/>Philosophy</label>{% endif %}
-     {%- if not default == "gen_page" -%}<label><input type="radio" name="radio" value="gen_page"/>General</label>{% endif %}
-     {%- if default == "gen_page" -%}<label><input type="radio" name="radio" value="gen_page" checked="checked"/>General</label>{% endif %}
-     {%- if not default == "all" -%}<label><input type="radio" name="radio" value="all"/>All</label>{% endif %}
-     {%- if default == "all" -%}<label><input type="radio" name="radio" value="all" checked="checked"/>All</label>{% endif %}
     <div class="pull-right">
 	   <input class="btn-medium btn-inverse" type="submit" value="submit"/>
 	</div>

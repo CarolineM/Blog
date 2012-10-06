@@ -116,40 +116,15 @@
 						<input type="hidden" id="posttype" name="posttype" value="caroline">
 					</div>
 					<br>
-					<div class="pull-right">
+			<div class="pull-right">
 			<div class='file-checkbox'>
 			{%- if not image:-%}
               <label><b>Upload a Picture</b></label>
               <input class='file' type='file' name='file' id="fileInput" />
               	{%- endif -%}
-              	<br>
-                {%- if esl -%} <input checked='checked' type='checkbox' name='esl' value='esl'/>{% endif %}
-                {%- if not esl -%} <input type='checkbox' name='esl' value='esl'/>{% endif %}
-                ESL
-              <label>
-                {%- if not life -%}<input type='checkbox' name='life' value="life"/>{% endif %}
-                {%- if life -%}<input checked='checked' type='checkbox' name='life' value="life"/>{% endif %}
-                Lifestyle
-              </label>
-              <label>
-                {%- if not de -%}<input type='checkbox' name='de' value="de"/>{% endif %}
-                {%- if de -%}<input checked='checked' type='checkbox' name='de' value="de"/>{% endif %}
-                Diet and Exercise
-              </label>
-               <label>
-                {%- if not phil -%}<input type='checkbox' name='phil' value="phil"/>{% endif %}
-                {%- if phil -%}<input checked='checked' type='checkbox' name='phil' value="phil"/>{% endif %}
-                Philosophy
-              </label>
-               <label>
-                {%- if not gen -%}<input type='checkbox' name='gen' value="gen"/>{% endif %}
-                {%- if gen -%}<input checked='checked' type='checkbox' name='gen' value="gen"/>{% endif %}
-                General
-              </label>
               </div>
             </div>
-            <br><br>
-            <br> <br> <br> <br><br> 
+            <br>
 		 <input class="btn btn-medium" value="Post" name="post" type="button" id="post" style="margin-right:5px;" /> 
 		 <input class="btn btn-medium" value="Save" name="save" type="button" id="save"/>
 
