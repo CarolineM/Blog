@@ -69,9 +69,7 @@
   <body>
   	    <div class="navbar navbar-fixed-top">
       <div class="navbar-inner">
-        <div class="container-fluid">
-          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-          </a>
+          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse"/>
           <a class="brand" href="/">CarolineM DevBlog</a>
           {%- if users.get_current_user(): -%} 
           	<div class="btn-group pull-right">
@@ -102,9 +100,7 @@
           </div><!--/.nav-collapse -->
         </div>
       </div>
-    </div>
-
-    <div class="span9">
+		 <div style="margin-right:40; margin-left:40;">
          {%- if error -%}
         <span class="label span6 label-important">{{ error }}</span>
          {% endif %}
@@ -113,6 +109,6 @@
         {%- if success -%}
         <span class="label span3 label-success">{{ success }}</span>
          {% endif %}
-    </div>
+         </div>
   </body>
 </html>
