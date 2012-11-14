@@ -71,11 +71,11 @@ function startAnimating() { // Start animating/drawing
     for (var i = 0; i < balls.length; i++) {
         var checkball = balls[i];
         if (checkball != this) {
-            if (isXWithinTheBall(checkball.x, this)) {
+            if (isXWithinTheBall(checkball.x + checkball.radius, this)) {
                 //this.bouncedx = true;
                 this.dx *= -1;
             }
-            if (isYWithinTheBall(checkball.y, this)) {
+            if (isYWithinTheBall(checkball.y + checkball.radius, this)) {
                 //this.bouncedy = true;
                 this.dy *= -1;
             }
@@ -114,6 +114,13 @@ function startAnimating() { // Start animating/drawing
     // posx and posy contain the mouse position relative to the document
     // Do something with this information
         alert(posx);
+    }
+
+    function getClickedBall(x, y) {
+        for(var i = 0; i < balls.length; i++) {
+
+        }
+
     }
 
     Ball.prototype.Create = function ()
@@ -217,7 +224,7 @@ window.onload = function(){
 
     colors[0] = "#C61AFF";
     colors[1] = "#FFE494";
-    colors[2] = "#1AFF53";
+    colors[11] = "#FFB3FF";
     colors[3] = "#1AFFC6";
     colors[4] = "#1AC6FF";
     colors[5] = "#FF1AC6";
@@ -226,7 +233,7 @@ window.onload = function(){
     colors[8] = "#FFB3FF";
     colors[9] = "#94AFFF";
     colors[10] = "#1AFFC6";
-    colors[11] = "#1AFFC6";
+    colors[2] = "#FF75BA";
 
     var xfactor = ((canvas.width - 30) / numBalls);
     for (var i = 0; i < numBalls; i++) {
