@@ -1,9 +1,18 @@
 //TODO each ball property
+//TODO convert song to ogg file
+
+var isAnimating = false;    // Is animation on or off?
+var animateRunning = false; // Are we in the animation loop?
+var requiresRedraw = true;
+
+//TODO array of balls
+var ball;
+
 var x=200;
 var y=200;
 
-var DX=3;
-var DY=3;
+var DX=1;
+var DY=1;
 
 var canvas;
 var context;
@@ -14,10 +23,21 @@ window.requestAnimFrame = (function(callback){
     window.mozRequestAnimationFrame ||
     window.oRequestAnimationFrame ||
     window.msRequestAnimationFrame ||
-    function(callback){
-        window.setTimeout(callback, 1000 / 60);
+    function(callback){ 
+        {
+          window.setTimeout(callback, 1000 / 60);
+        }
     };
 })();
+
+function stopAnimating() {  // Stop animating/drawing
+    isAnimating = false;
+}
+
+function startAnimating() { // Start animating/drawing
+    isAnimating = true;
+    if (!animateRunning) animate(ball); // Only draw if we are not already drawing
+}
 
   function Ball(color, radius, dx, dy)
   {
@@ -30,10 +50,13 @@ window.requestAnimFrame = (function(callback){
     this.highlight = new Highlight(x-30, y-30, this);
   }
 
+    //TODO: hacked to get a correct(ish) border location on the left and bottom
+    //changes with ball state and potentially canvas size. Cant figure out how to 
+    //do this correctly.
     Ball.prototype.Bounce = function (widthScale, heightScale)
-  {
-    if (this.x*widthScale + this.radius*widthScale*1.29 >= canvas.width || this.x - this.radius <= 0) this.dx *= -1;
-    if (this.y - this.radius <= 0 || this.y*heightScale + this.radius*heightScale*1.39 >= canvas.height) this.dy *= -1;
+  {   
+    if (this.x  >= canvas.width*2.3 || this.x - this.radius <= 0) this.dx *= -1;
+    if (this.y - this.radius <= 0 || this.y >= canvas.height*2.3) this.dy *= -1;
   }
 
     Ball.prototype.Create = function (widthScale, heightScale)
@@ -84,28 +107,40 @@ window.requestAnimFrame = (function(callback){
 
  //TODO change to ball[]
 function animate(ball){
-    
-    var date = new Date();
-    var time = date.getTime();
+    if (isAnimating) { // Only draw if we are drawing
+        animateRunning = true;
+        try {
+            if (requiresRedraw) {
+                requiresRedraw = false;
+                renderStatic();
+            }
+            var date = new Date();
+            var time = date.getTime();
  
-    // update
-    var widthScale = Math.sin(time / 250) * .02 + 0.4;
-    var heightScale = -1 * Math.sin(time / 250) * .02 + 0.4;
+            // update
+             var widthScale = Math.sin(time / 250) * .02 + 0.4;
+             var heightScale = -1 * Math.sin(time / 250) * .02 + 0.4;
 
-    // clear
-    context.clearRect(0, 0, canvas.width, canvas.height);
+            // clear
+             context.clearRect(0, 0, canvas.width, canvas.height);
 
-    //ball animations
-    ball.x -= ball.dx;
-    ball.y -= ball.dy;
-    ball.highlight.x -= ball.dx;
-    ball.highlight.y -= ball.dy;
-    ball.Create(widthScale, heightScale);
-    ball.Bounce(widthScale, heightScale);
+            //ball animations
+            ball.x -= ball.dx;
+            ball.y -= ball.dy;
+            ball.highlight.x -= ball.dx;
+            ball.highlight.y -= ball.dy;
+            ball.Create(widthScale, heightScale);
+            ball.Bounce(widthScale, heightScale);
+        } catch (e) {
+            if (window.console && window.console.log)
+                window.console.log(e); // for debugging
+        }
+    }
  
     // request new frame
     requestAnimFrame(function(){
         animate(ball);
+        animateRunning = false;
     });
 }
 
@@ -113,6 +148,5 @@ function animate(ball){
 window.onload = function(){
     canvas = document.getElementById("myCanvas");
     context = canvas.getContext('2d');
-    var ball = new Ball("#8ED6FF", 65, DX, DY);
-    animate(ball);
+    ball = new Ball("#8ED6FF", 65, DX, DY);
 };
