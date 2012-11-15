@@ -9,9 +9,10 @@ var requiresRedraw = true;
 //TODO array of balls
 var balls = new Array();
 var colors = new Array();
+var sound = new Audio("Pop.mp3");
 
 var DX=.3;
-var DY=.2;
+var DY=1;
 var bouceFactor = 2;
 var numBalls = 12;
 var startY;
@@ -51,8 +52,7 @@ function startAnimating() { // Start animating/drawing
     this.dx  = dx;
     this.dy  = dy;
     this.color   = color;
-    this.bouncedx = false;
-    this.bouncedy = false;
+    this.delete = false;
     this.highlight = new Highlight(x-15, y-15, this);
   }
 
@@ -71,16 +71,15 @@ function startAnimating() { // Start animating/drawing
     for (var i = 0; i < balls.length; i++) {
         var checkball = balls[i];
         if (checkball != this) {
-            if (isXWithinTheBall(checkball.x + checkball.radius, this)) {
-                //this.bouncedx = true;
+            if ((isXWithinTheBall(checkball.x + checkball.radius, this) || 
+                isXWithinTheBall(checkball.x - checkball.radius, this)) &&
+                (isYWithinTheBall(checkball.y + checkball.radius, this) || 
+                isYWithinTheBall(checkball.y - checkball.radius, this))) {
                 this.dx *= -1;
-            }
-            if (isYWithinTheBall(checkball.y + checkball.radius, this)) {
-                //this.bouncedy = true;
                 this.dy *= -1;
             }
+            }
         }
-    }
   }
 
   function isXWithinTheBall(x, ball) {
@@ -93,7 +92,7 @@ function startAnimating() { // Start animating/drawing
         return (y > ball.y - ball.radius) && 
                 (y <= ball.y + ball.radius)
   }
-//TODO not doing anything yet
+
    function clickBall(e) {
         var posx = 0;
         var posy = 0;
@@ -102,23 +101,29 @@ function startAnimating() { // Start animating/drawing
             posx = e.pageX;
             posy = e.pageY;
          }
-        else if (e.clientX || e.clientY)    {
+        else  {
             posx = e.clientX + document.body.scrollLeft
                 + document.documentElement.scrollLeft;
             posy = e.clientY + document.body.scrollTop
                 + document.documentElement.scrollTop;
-
-        posx -= gCanvasElement.offsetLeft;
-        posy -= gCanvasElement.offsetTop;
     }
-    // posx and posy contain the mouse position relative to the document
-    // Do something with this information
-        alert(posx);
+        posx -= canvas.offsetLeft;
+        posy -= canvas.offsetTop;
+        getClickedBall(posx, posy);
     }
 
+    //TODO refactor duplicate code
     function getClickedBall(x, y) {
         for(var i = 0; i < balls.length; i++) {
-
+            var checkball = balls[i];
+            if ((isXWithinTheBall(x, checkball) &&
+                (isYWithinTheBall(y, checkball)))) {
+                checkball.delete = true;
+                /TODO animate pop, plus sound /
+                 var click=sound.cloneNode();
+                //click.volume=volume;
+                click.play();
+            }
         }
 
     }
@@ -130,8 +135,6 @@ function startAnimating() { // Start animating/drawing
         grd.addColorStop(0, "#DBF2FF");
 
         context.save();
-    
-        //context.scale(widthScale, heightScale);
         context.beginPath();
         context.arc(this.x, this.y, this.radius, 0, 2 * Math.PI, false);
         context.fillStyle = grd;
@@ -161,7 +164,6 @@ function startAnimating() { // Start animating/drawing
 
     context.beginPath();
     context.save();
-    //context.scale(widthScale, heightScale);
     context.arc(this.x, this.y, this.radius, 0, 2 * Math.PI, false);
     context.fillStyle = grd;
     context.fill();
@@ -172,7 +174,7 @@ function startAnimating() { // Start animating/drawing
 function animate(balls){
     if (isAnimating) { // Only draw if we are drawing
         animateRunning = true;
-        //try {
+        try {
             if (requiresRedraw) {
                 requiresRedraw = false;
                 //TODO:
@@ -191,21 +193,21 @@ function animate(balls){
                 ball.highlight.y -= ball.dy;
                 ball.Create();
                 ball.Bounce();
-
-                /**if (ball.bouncedx) {
-                    ball.bouncedx = false;
-                    ball.dx /= bouceFactor;
-                }
-                if (ball.bouncedy) {
-                    ball.bouncedy = false;
-                    ball.dy /= bouceFactor;
-                }**/
             }
-        /**} catch (e) {
+            //check delete
+            for (var i = 0; i < balls.length; i++) {
+                if (balls[i].delete) {
+                    var color=Math.floor(Math.random()*colors.length)
+                    var xval=Math.floor(100 + Math.random()*(canvas.width - 100))
+                    var yval=Math.floor(100 + Math.random()*(canvas.height - 100))
+                    balls[i] = new Ball(colors[color], 30, DX, DY, xval, yval);
+                }
+            }
+        } catch (e) {
             if (window.console && window.console.log) {
                window.console.log(e); // for debugging
            }
-        }**/
+        }
     }
  
     // request new frame
@@ -219,7 +221,11 @@ function animate(balls){
 window.onload = function(){
     canvas = document.getElementById("myCanvas");
     context = canvas.getContext('2d');
+    //TODO block click on pause
     canvas.addEventListener('click', clickBall, false);
+    sound.preload = 'auto';
+    sound.load();
+
     startY = canvas.height/2;
 
     colors[0] = "#C61AFF";
