@@ -4,7 +4,6 @@
 
 var isAnimating = false;    // Is animation on or off?
 var animateRunning = false; // Are we in the animation loop?
-var requiresRedraw = true;
 
 //TODO array of balls
 var balls = new Array();
@@ -18,6 +17,14 @@ var numBalls = 12;
 var startY;
 var maxX = 1600;
 var minX = 100;
+
+var numSmallBalls = 80;
+var smallDX = .3;
+var smallDY = 1;
+
+var time = 0;
+
+var alpha = 1.0;
 
 var canvas;
 var context;
@@ -53,7 +60,10 @@ function startAnimating() { // Start animating/drawing
     this.dy  = dy;
     this.color   = color;
     this.delete = false;
-    this.highlight = new Highlight(x-15, y-15, this);
+    this.donotmod = false;
+    if (radius > 10) {
+        this.highlight = new Highlight(x-15, y-15, this);
+    }
   }
 
 
@@ -61,11 +71,9 @@ function startAnimating() { // Start animating/drawing
   {   
     if (this.x + this.radius >= canvas.width || this.x - this.radius <= 0) {
         this.dx *= -1;
-        return;
     }
     if (this.y - this.radius <= 0 || this.y + this.radius >= canvas.height) {
         this.dy *= -1;
-        return;
     }
     //bounce off of other balls
     for (var i = 0; i < balls.length; i++) {
@@ -75,11 +83,19 @@ function startAnimating() { // Start animating/drawing
                 isXWithinTheBall(checkball.x - checkball.radius, this)) &&
                 (isYWithinTheBall(checkball.y + checkball.radius, this) || 
                 isYWithinTheBall(checkball.y - checkball.radius, this))) {
-                this.dx *= -1;
-                this.dy *= -1;
+                if (!this.donotmod) {
+                    this.dx *= -1;
+                    this.dy *= -1;
+                    this.donotmod = true;
+                }
             }
             }
         }
+  }
+
+  function isOffScreen(ball) {
+    return (ball.x < 0) || (ball.x  > canvas.width) || 
+            (ball.y < 0) || (ball.y > canvas.height);
   }
 
   function isXWithinTheBall(x, ball) {
@@ -119,18 +135,16 @@ function startAnimating() { // Start animating/drawing
             if ((isXWithinTheBall(x, checkball) &&
                 (isYWithinTheBall(y, checkball)))) {
                 checkball.delete = true;
-                /TODO animate pop, plus sound /
+                //TODO animate pop
                  var click=sound.cloneNode();
-                //click.volume=volume;
                 click.play();
             }
         }
-
     }
 
     Ball.prototype.Create = function ()
     {
-        var grd = context.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.radius)
+        var grd = context.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.radius);
         grd.addColorStop(1, this.color);
         grd.addColorStop(0, "#DBF2FF");
 
@@ -140,10 +154,18 @@ function startAnimating() { // Start animating/drawing
         context.fillStyle = grd;
         context.fill();
         context.lineWidth = 2;
-        context.strokeStyle = "FFF5EE";
+        if (this.radius < 10 ) {
+            context.strokeStyle = "black";
+        }
+        else {
+            context.strokeStyle = "FFF5EE";
+        }
         context.stroke();
         context.restore();
-        this.highlight.Create();
+        
+        if (this.highlight) {
+             this.highlight.Create();
+         }
     }
 
   function Highlight(x, y, ball)
@@ -170,44 +192,90 @@ function startAnimating() { // Start animating/drawing
     context.restore();
    }
 
+function genRandomColor() {
+    var color = Math.floor(Math.random()*colors.length);
+    return colors[color];
+}
+
+function addSmallerBalls() {
+    for (var i = 0; i < numSmallBalls; i++) {
+        if (i < numSmallBalls/2) {
+            balls[balls.length] = new Ball(genRandomColor(), 8, smallDX, smallDY, 20, i*20);
+        }
+        else {
+            balls[balls.length] = new Ball(genRandomColor(), 8, smallDX, smallDY, canvas.width - 20, i*20);
+        }
+    }
+}
+
+function renderText(content, x, y, opacity) {
+    context.save();
+    context.fillStyle = "rgba(51, 255, 51, " + alpha + ")";
+    context.font = '50px fantasy';
+    context.textBaseline = 'bottom';
+    context.fillText(content, x, y);
+    context.restore();
+}
+
 
 function animate(balls){
     if (isAnimating) { // Only draw if we are drawing
         animateRunning = true;
-        try {
-            if (requiresRedraw) {
-                requiresRedraw = false;
-                //TODO:
-                //renderStatic();
-            }
+        time++;
+        //try {
 
             // clear
              context.clearRect(0, 0, canvas.width, canvas.height);
 
-            //ball animations
-            for(var i = 0; i < balls.length; i++) {
-                var ball = balls[i];
-                ball.x -= ball.dx;
-                ball.y -= ball.dy;
-                ball.highlight.x -= ball.dx;
-                ball.highlight.y -= ball.dy;
-                ball.Create();
-                ball.Bounce();
-            }
-            //check delete
-            for (var i = 0; i < balls.length; i++) {
-                if (balls[i].delete) {
-                    var color=Math.floor(Math.random()*colors.length)
-                    var xval=Math.floor(100 + Math.random()*(canvas.width - 100))
-                    var yval=Math.floor(100 + Math.random()*(canvas.height - 100))
-                    balls[i] = new Ball(colors[color], 30, DX, DY, xval, yval);
+              //ball animations
+                for(var i = 0; i < balls.length; i++) {
+                    var ball = balls[i];
+                    ball.x -= ball.dx;
+                    ball.y -= ball.dy;
+                    ball.donotmod = false;
+                    if (ball.highlight) {
+                        ball.highlight.x -= ball.dx;
+                        ball.highlight.y -= ball.dy;
+                    }
+                    ball.Create();
+                    ball.Bounce();
+                    //check delete
+                    if (ball.delete || isOffScreen(ball)) {
+                        if (ball.delete && ball.radius < 10)  {
+                            balls.splice(i, 1);
+                            i--;
+                        }
+                        else {
+                            var color=genRandomColor();
+                            var xval=Math.floor(100 + Math.random()*(canvas.width - 100))
+                            var yval=Math.floor(100 + Math.random()*(canvas.height - 100))
+                            balls[i] = new Ball(color, ball.radius, ball.dx * -1, ball.dy * -1, xval, yval);
+                        }
+                 }
                 }
-            }
-        } catch (e) {
+
+                if (time == 2500) {
+                    addSmallerBalls();
+                    alpha = 1.0;
+                }
+                if (time < 100) {
+                    renderText("Click to unstick", canvas.width/4, canvas.height/2 - 50, alpha);
+                    alpha = alpha - 0.01;
+                }
+                if (time >= 2600 && time <= 2800) {
+                    renderText("Remove the small ones!", canvas.width/5, canvas.height/2, alpha);
+                    alpha = alpha - 0.001;
+                }
+                if (time > 2800) {
+                    renderText(balls.length - numBalls, 40, 80, alpha);
+                    if (alpha < 1.0) {
+                        alpha = alpha + 0.01;
+                    }
+                }
+        /**} catch (e) {
             if (window.console && window.console.log) {
                window.console.log(e); // for debugging
-           }
-        }
+           }**/
     }
  
     // request new frame
@@ -225,7 +293,6 @@ window.onload = function(){
     canvas.addEventListener('click', clickBall, false);
     sound.preload = 'auto';
     sound.load();
-
     startY = canvas.height/2;
 
     colors[0] = "#C61AFF";
@@ -241,7 +308,7 @@ window.onload = function(){
     colors[10] = "#1AFFC6";
     colors[2] = "#FF75BA";
 
-    var xfactor = ((canvas.width - 30) / numBalls);
+    var xfactor = ((canvas.width - 60) / numBalls);
     for (var i = 0; i < numBalls; i++) {
         DX= (-DX);
         DY= (-DY);
