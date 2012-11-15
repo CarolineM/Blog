@@ -14,6 +14,7 @@ application = webapp2.WSGIApplication([
         ('/saved', views.SavedPage),
         ('/profile', views.ProfilePage),
         ('/about', views.AboutPage),
+        ('/bubbles', views.Bubbles),
         ('/upload', views.Upload),
         ('/single', views.OnePost)
         ],

@@ -101,6 +101,10 @@ class ProfilePage(BaseHandler):
 class AboutPage(BaseHandler):
     def get(self):
         self.render_template('about.html', {'currpage' : '/about' })
+        
+class Bubbles(BaseHandler):
+    def get(self):
+        self.render_template('bubbles.html', {'currpage' : '/bubbles' })
 
 class ContactPage(BaseHandler):
     def get(self):

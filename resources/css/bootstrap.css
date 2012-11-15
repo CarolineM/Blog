@@ -24,14 +24,26 @@ section {
 audio,
 canvas,
 video {
-  display: inline-block;
+ display: inline-block;
   *display: inline;
   *zoom: 1;
+
 }
 
 audio:not([controls]) {
   display: none;
 }
+    .wrapper {
+        height: 30px;
+        position: relative;
+    	display: block;
+    }
+    
+       audio {
+        bottom: 0;
+        position: absolute;
+    }
+
 
 html {
   font-size: 100%;

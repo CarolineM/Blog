@@ -1,14 +1,14 @@
-//TODO each ball property
-//TODO convert song to ogg file
-
 
 var isAnimating = false;    // Is animation on or off?
 var animateRunning = false; // Are we in the animation loop?
 
 //TODO array of balls
+
+var isiPad = navigator.userAgent.match(/iPad/i) != null;
+
 var balls = new Array();
 var colors = new Array();
-var sound = new Audio("Pop.mp3");
+var sound;
 
 var DX=.3;
 var DY=1;
@@ -136,8 +136,10 @@ function startAnimating() { // Start animating/drawing
                 (isYWithinTheBall(y, checkball)))) {
                 checkball.delete = true;
                 //TODO animate pop
-                 var click=sound.cloneNode();
-                click.play();
+                if (sound) {
+                	var click=sound.cloneNode();
+                	click.play();
+                }
             }
         }
     }
@@ -291,9 +293,12 @@ window.onload = function(){
     context = canvas.getContext('2d');
     //TODO block click on pause
     canvas.addEventListener('click', clickBall, false);
-    sound.preload = 'auto';
-    sound.load();
     startY = canvas.height/2;
+    if (!jQuery.browser.mobile && !isiPad) {
+    	sound = new Audio("resources/music/Pop.mp3");
+        sound.preload = 'auto';
+        sound.load();
+    }
 
     colors[0] = "#C61AFF";
     colors[1] = "#FFE494";
