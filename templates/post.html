@@ -1,136 +1,74 @@
-{% extends "base.html" %}
-{% block content %}
-	    <script type="text/javascript">
-	    	$(function() {
-	    		$("#id_text_tbl").css("width", "100%")
-	    	});
-	    	$(function() {
-	    		jQuery('#delete_image').click( function () {
-	    			$.post("/delete_image", {post_id: '{{ id }}'},
-	    		    	function(arg)
-	    		    	{
-	    		    		location.reload();
-	    		    	}
-	    			)
-	    		} );
-	    		});
-	    	$(function() {
-	    		jQuery('#post').click( function () {
-		    		$.get("/upload", function(data) {
-		    			$("#posttype").val("POST");
-		    	    	$("#main_form").attr('action', data);
-		    	    	$("#main_form").submit();
-		    		});
-	    		});
-	    	});
-	    	$(function() {
-	    		jQuery('#save').click( function () {
-		    		$.get("/upload", function(data) {
-		    			$("#posttype").val("SAVE");
-		    	    	$("#main_form").attr('action', data);
-		    	    	$("#main_form").submit();
-		    		});
-	    		});
-	    	});
-	    	var _validFileExtensions = [".jpg", ".jpeg", ".bmp", ".gif", ".png"];
-
-	    	function Validate(oForm) {
-	    	    var arrInputs = oForm.getElementsByTagName("input");
-	    	    for (var i = 0; i < arrInputs.length; i++) {
-	    	        var oInput = arrInputs[i];
-	    	        if (oInput.type == "file") {
-	    	            var sFileName = oInput.value;
-	    	            if (sFileName.length > 0) {
-	    	                var blnValid = false;
-	    	                for (var j = 0; j < _validFileExtensions.length; j++) {
-	    	                    var sCurExtension = _validFileExtensions[j];
-	    	                    if (sFileName.substr(sFileName.length - sCurExtension.length, sCurExtension.length).toLowerCase() == sCurExtension.toLowerCase()) {
-	    	                        blnValid = true;
-	    	                        break;
-	    	                    }
-	    	                }
-
-	    	                if (!blnValid) {
-	    	                    alert("Sorry, " + sFileName + " is invalid, allowed extensions are: " + _validFileExtensions.join(", "));
-	    	                    return false;
-	    	                }
-	    	            }
-	    	        }
-	    	    }
-
-	    	    return true;
-	    	}
-	    	</script>
-	    {%- if not date:-%}
-	    	<script type="text/javascript">
-	    	$(function() {
-				$( "#datepicker" ).datepicker("setDate", new Date());
-			});
-	    	</script> 
-	    {%- endif -%}
-	    {%- if fulldate: -%}
-    		<span class='label label-info pull-right'>Last Saved: {{ fulldate.strftime('%Y-%m-%d %H:%M:%S') }}</span>
-        {% endif %}
-		<legend>Create Your Blog Post</legend>
-			<div class="control-group">
-			<div class="controls">
-			<div class="row-fluid">
-				<form action='/None' method="POST" class="well" 
-				id="main_form" enctype="multipart/form-data" onsubmit="return Validate(this);">
+{% extends "base.html" %} {% block content %} {%- if not date:-%}
+<script type="text/javascript" src="../resources/post.js"></script>
+{%- endif -%} {%- if fulldate: -%}
+<span class='label label-info pull-right'>Last Saved: {{
+	fulldate.strftime('%Y-%m-%d %H:%M:%S') }}</span>
+{% endif %}
+<legend>Create Your Blog Post</legend>
+<div class="control-group">
+	<div class="controls">
+		<div class="row-fluid">
+			<form action='/None' method="POST" class="well" id="main_form"
+				enctype="multipart/form-data" onsubmit="return Validate(this);">
 				<table>
-				   <tr>
-				   <td>				
-						<h4>Title:</h4>
-				   </td>
-					<td>
-						<h4>Date:</h4>
-					</td>
+					<tr>
+						<td>
+							<h4>Title:</h4></td>
+						<td>
+							<h4>Date:</h4></td>
 					</tr>
 					<tr>
-					<td>
-					  <input class="input-box-lrg" type="text" value='{{ title }}' name="subject" id="id_title" style="margin-right: 15px;"/>
-					 </td>
-					 <td>
-						<input class="input-box-lrg" type="text" id="datepicker" name="date" value='{{ date }}'>
+						<td><input class="input-box-lrg" type="text"
+							value='{{ title }}' name="subject" id="id_title"
+							style="margin-right: 15px;" /></td>
+						<td><input class="input-box-lrg" type="text" id="datepicker"
+							name="date" value='{{ date }}'></td>
+					</tr>
+					<tr>
+						<td>
+							<h4>Youtube URL:</h4></td>
+					</tr>
+					<tr>
+						<td><input class="input-box-lrg" type="text" id="id_vid"
+							name="video" {%- if youtube: -%} value="{{ youtube }}" {% endif %}/>
 						</td>
-						</tr>
-					 <tr>
-					 <td>
-					   <h4>Youtube URL:</h4>
-					  </td>
-					  </tr> 
-					   <tr><td><input class="input-box-lrg" type="text" id="id_vid" name="video" 
-					   {%- if youtube: -%} value="{{ youtube }}" {% endif %}/></td></tr>
-					   
-					</table>
-					{%- if image: -%}
-					    <div class="pull-right"><input type="button" class="btn-medium btn-danger" id="delete_image" value="Remove Image"></div>
-						<p align="center"><img src="{{ image }}" alt="banner" style="margin:auto; "/></p>
-					{% endif %}	
-					<h4>Post:</h4>
-					<div class="boxsizingBorder">
-						<div>
-						<textarea style="height: 350px; width: 100%;" name="content" id="id_text" class="tinymce">{{ text }}</textarea>
-						</div>
-						<input type="hidden" name="id" value='{{ id }}'>
-						<input type="hidden" id="posttype" name="posttype" value="caroline">
-					</div>
-					<br>
-			<div class="pull-right">
-			<div class='file-checkbox'>
-			{%- if not image:-%}
-              <label><b>Upload a Picture</b></label>
-              <input class='file' type='file' name='file' id="fileInput" />
-              	{%- endif -%}
-              </div>
-            </div>
-            <br>
-		 <input class="btn btn-medium" value="Post" name="post" type="button" id="post" style="margin-right:5px;" /> 
-		 <input class="btn btn-medium" value="Save" name="save" type="button" id="save"/>
+					</tr>
 
-		</form>
-			</div>
-			</div>
+				</table>
+				{%- if image: -%}
+				<div class="pull-right">
+					<input type="button" class="btn-medium btn-danger"
+						id="delete_image" value="Remove Image">
+				</div>
+				<p align="center">
+					<img src="{{ image }}" alt="banner" style="margin: auto;" />
+				</p>
+				{% endif %}
+				<h4>Post:</h4>
+				<div class="boxsizingBorder">
+					<div>
+						<textarea style="height: 350px; width: 100%;" name="content"
+							id="id_text" class="tinymce">{{ text }}</textarea>
+					</div>
+					<input type="hidden" name="id" value='{{ id }}'> <input
+						type="hidden" id="posttype" name="posttype" value="caroline">
+				</div>
+				<br>
+				<div class="pull-right">
+					<div class='file-checkbox'>
+						{%- if not image:-%} <label><b>Upload a Picture</b>
+						</label> <input class='file' type='file' name='file' id="fileInput" />
+						{%- endif -%}
+					</div>
+				</div>
+				<br> <input class="btn btn-medium" value="Post" name="post"
+					type="button" id="post" style="margin-right: 5px;" /> <input
+					class="btn btn-medium" value="Save" name="save" type="button"
+					id="save" />
+
+			</form>
+		</div>
+	</div>
 </div>
 {% endblock %}
 
