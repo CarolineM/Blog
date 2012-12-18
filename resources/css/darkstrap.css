@@ -38,7 +38,7 @@ body {
 
 /* line 49, ../sass/darkstrap.scss */
 h1, h2, h3, h4, h5, h6 {
-  color: white;
+  color: #00B88A;
 }
 
 /* line 50, ../sass/darkstrap.scss */
@@ -314,6 +314,14 @@ legend {
 /* line 216, ../sass/darkstrap.scss */
 .pagination a {
   border-color: #666;
+}
+
+a {
+	color: #33FFCC;
+}
+
+a:hover {
+	color: #00B88A;
 }
 
 /* line 219, ../sass/darkstrap.scss */

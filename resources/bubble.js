@@ -4,6 +4,7 @@ var animateRunning = false; // Are we in the animation loop?
 
 //TODO array of balls
 
+// check if it's an ipad
 var isiPad = navigator.userAgent.match(/iPad/i) != null;
 
 var balls = new Array();
@@ -274,10 +275,10 @@ function animate(balls){
                         alpha = alpha + 0.01;
                     }
                 }
-        /**} catch (e) {
+        } catch (e) {
             if (window.console && window.console.log) {
                window.console.log(e); // for debugging
-           }**/
+           }
     }
  
     // request new frame

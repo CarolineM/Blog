@@ -1,5 +1,4 @@
 {% extends "base.html" %} {% block content %} {%- if not date:-%}
-<script type="text/javascript" src="../resources/post.js"></script>
 {%- endif -%} {%- if fulldate: -%}
 <span class='label label-info pull-right'>Last Saved: {{
 	fulldate.strftime('%Y-%m-%d %H:%M:%S') }}</span>
