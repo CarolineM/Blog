@@ -63,6 +63,7 @@ textarea.uniform {
   -moz-border-radius: 3px;
   border-radius: 3px;
   outline: 0;
+  background-color: #F5F5F5;
 }
 
 input.text:focus,
@@ -74,6 +75,7 @@ textarea.uniform:focus {
   box-shadow: 0px 0px 4px rgba(0,0,0,0.3);
   border-color: #999;
   background: url('../images/bg-input-focus.png') repeat-x 0px 0px;
+  background-color: #F5F5F5;
 }
 
 /* SPRITES */
@@ -389,6 +391,7 @@ div.button span {
   text-transform: uppercase;
   padding-left: 2px;
   padding-right: 15px;
+  color: #555;
 }
 
 /* Select */
@@ -439,20 +442,22 @@ div.uploader span.action {
   width: 85px;
   text-align: center;
   text-shadow: #fff 0px 1px 0px;
-  background-color: #fff;
   font-size: 11px;
   font-weight: bold;
 }
 
 div.uploader span.filename {
-  color: #777;
+  color: #333;
   width: 82px;
   border-right: solid 1px #bbb;
   font-size: 11px;
+  
 }
 
 div.uploader input {
   width: 190px;
+  background: #333;
+  color: #333;
 }
 
 div.uploader.disabled span.action {

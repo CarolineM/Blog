@@ -7,7 +7,7 @@
 <h1>Coming Soon!</h1>
 {% endif %}
 {% for note in notes %}
-		<div class="hero-unit">
+		<div class="well">
 			<h2><a href='/single?post_id={{ note.key() }}'>{{ note.title }}</a></h2>
 			{%- if img[note]: -%}
 				<p align="center"><img src="{{ img[note] }}" alt="banner" style="margin:auto; margin-bottom:20px;"/></p>
