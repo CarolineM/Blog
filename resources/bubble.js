@@ -1,3 +1,12 @@
+//for mobile
+$(function() {
+	if(jQuery.browser.mobile) {
+		element = document.getElementById("myCanvas");
+		element.style.width = '100%';
+		element.style.margin = '0 auto';
+	}
+});
+
 
 var isAnimating = false;    // Is animation on or off?
 var animateRunning = false; // Are we in the animation loop?
@@ -225,7 +234,7 @@ function animate(balls){
     if (isAnimating) { // Only draw if we are drawing
         animateRunning = true;
         time++;
-        //try {
+        try {
 
             // clear
              context.clearRect(0, 0, canvas.width, canvas.height);
@@ -279,6 +288,7 @@ function animate(balls){
             if (window.console && window.console.log) {
                window.console.log(e); // for debugging
            }
+    }
     }
  
     // request new frame
