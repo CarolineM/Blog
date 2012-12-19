@@ -84,27 +84,29 @@ body {
 				<ul class="nav">
 					{%- if currpage == '/': -%}
 					<li class='active'>{% endif %} {%- if not currpage == '/': -%}
-					<li>{% endif %} <a href="/">Home</a>
+					<li class="hitem">{% endif %} <a href="/">Home</a>
 					</li> {%- if currpage == '/bubbles': -%}
 					<li class='active'>{% endif %} {%- if not currpage ==
 						'/bubbles': -%}
-					<li>{% endif %} <a href="/bubbles">Bubbles Animation</a>
+					<li class="hitem">{% endif %} <a href="/bubbles">Bubbles Animation</a>
 					</li> {%- if users.get_current_user(): -%} {% endif %} {%- if currpage
 					== '/about': -%}
 					<li class='active'>{% endif %} {%- if not currpage ==
 						'/about': -%}
-					<li>{% endif %} <a href="/about">About</a>
+					<li class="hitem">{% endif %} <a href="/about">About</a>
 					</li> {%- if users.get_current_user(): -%} {% endif %}
 				</ul>
 			</div>
 			<!--/.nav-collapse -->
 		</div>
 	</div>
-	<div style="margin-right: 40; margin-left: 40;">
+	<div id="pmarg" style="margin-right: 40; margin-left: 40;">
 		{%- if error -%} <span class="label span6 label-important">{{
 			error }}</span> {% endif %} {% block content %} {% endblock %} {%- if
 		success -%} <span class="label span3 label-success">{{ success
 			}}</span> {% endif %}
+			
 	</div>
+
 </body>
 </html>

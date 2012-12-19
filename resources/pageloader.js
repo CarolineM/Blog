@@ -19,3 +19,17 @@ $(function() {
 $(function() {
 	$("input, textarea, select, button").uniform();
 });
+
+//for mobile
+$(function() {
+	if(jQuery.browser.mobile) {
+		var menu = document.getElementsByClassName('hitem');
+		for(var i=0; i<menu.length; i++) {
+			menu[i].style.background = 'black';
+		}
+		
+		element = document.getElementById("pmarg");
+		element.style.width = '100%';
+		element.style.margin = '0 auto';
+	}
+});
