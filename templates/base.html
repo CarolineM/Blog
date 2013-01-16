@@ -55,7 +55,6 @@
 				);
 
 			});
-			
 	        $(function(){
 	            $("input, textarea, select, button").uniform();
 	          });
@@ -73,7 +72,7 @@
         <div class="container-fluid">
           <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
           </a>
-          <a class="brand" href="/">Adriana English</a>
+          <a class="brand" href="#">Adriana English</a>
           {%- if users.get_current_user(): -%} 
           	<div class="btn-group pull-right">
                <a class="btn btn-inverse dropdown-toggle" data-toggle="dropdown" href="#">
@@ -120,9 +119,6 @@
          {% endif %}
         {% block content %}
         {% endblock %}
-        {%- if success -%}
-        <span class="label span3 label-success">{{ success }}</span>
-         {% endif %}
     </div>
     <div id="push"></div>
     </div>
