@@ -4968,3 +4968,18 @@ box-sizing: border-box;
 .invisible {
   visibility: hidden;
 }
+html,
+body {
+    height: 100%;
+}
+ 
+#wrap {
+    min-height: 95%;
+    height: auto !important;
+    height: 100%;
+    margin: 0 auto -60px;
+}
+#push,
+#footer {
+    height: 60px;
+}
