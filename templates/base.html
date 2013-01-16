@@ -79,6 +79,8 @@
               	<span class="caret"></span>
                </a>
                <ul class="dropdown-menu">
+              	<li><a href="/post">New Post</a></li>
+              	<li><a href="/saved">Saved Posts</a></li>
               	<li><a href="/profile">Profile</a></li>
               	<li class="divider"></li>
               	<li><a href= {{ logout }} >Sign Out</a></li>
@@ -90,25 +92,6 @@
             {%- if currpage == '/': -%}<li class='active'>{% endif %}
             {%- if not currpage == '/': -%}<li>{% endif %}
               <a href="/">Home</a></li>
-              	{%- if users.get_current_user(): -%}
-              		{%- if currpage == '/post': -%}<li class='active'>{% endif %}
-              		{%- if not currpage == '/post': -%}<li>{% endif %}
-              		<a href="/post">New Post</a></li>
-              		{%- if currpage == '/saved': -%}<li class='active'>{% endif %}
-              		{%- if not currpage == '/saved': -%}<li>{% endif %}
-              		<a href="/saved">Saved Posts</a></li>
-              	{% endif %}
-            </ul>
-          </div><!--/.nav-collapse -->
-        </div>
-      </div>
-    </div>
-        <div class="container-fluid">
-      <div class="row-fluid">
-        <div class="span3">
-          <div class="well sidebar-nav">
-            <ul class="nav nav-list">
-              <li class="nav-header">Adriana English</li>
               {%- if currpage == '/esl': -%}<li class='active'>{% endif %}
                {%- if not currpage == '/esl': -%}<li>{% endif %}
               <a href="esl"><i class="icon-cheveron-right"></i>ESL Lessons</a></li>
@@ -124,16 +107,11 @@
               {%- if currpage == '/general': -%}<li class='active'>{% endif %}
               {%- if not currpage == '/general': -%}<li>{% endif %}
               <a href="/general"><i class="icon-cheveron-right"></i>General</a></li>
-              <li class="nav-header">About Me</li>
-              {%- if currpage == '/about': -%}<li class='active'>{% endif %}
-              {%- if not currpage == '/about': -%}<li>{% endif %}
-              <a href="/about"><i class="icon-cheveron-right"></i>About</a></li>
-              {%- if currpage == '/contact': -%}<li class='active'>{% endif %}
-              {%- if not currpage == '/contact': -%}<li>{% endif %}
-              <a href="/contact"><i class="icon-cheveron-right"></i>Contact</a></li>
             </ul>
-          </div><!--/.well -->
-        </div><!--/span-->
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
     <div class="span9">
          {%- if error -%}
         <span class="label span6 label-important">{{ error }}</span>
@@ -141,5 +119,6 @@
         {% block content %}
         {% endblock %}
     </div>
+    <div class="footer"></div>
   </body>
 </html>
