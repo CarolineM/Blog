@@ -2,16 +2,13 @@
 $(function() {
 	if(jQuery.browser.mobile) {
 		element = document.getElementById("myCanvas");
-		element.style.width = '100%';
-		element.style.margin = '0 auto';
+		element.style.height = '100%';
 	}
 });
 
 
 var isAnimating = false;    // Is animation on or off?
 var animateRunning = false; // Are we in the animation loop?
-
-//TODO array of balls
 
 // check if it's an ipad
 var isiPad = navigator.userAgent.match(/iPad/i) != null;
@@ -25,8 +22,6 @@ var DY=1;
 var bouceFactor = 2;
 var numBalls = 12;
 var startY;
-var maxX = 1600;
-var minX = 100;
 
 var numSmallBalls = 80;
 var smallDX = .3;
@@ -38,6 +33,10 @@ var alpha = 1.0;
 
 var canvas;
 var context;
+var maxX;
+var minX;
+var rad;
+
 
 window.requestAnimFrame = (function(callback){
     return window.requestAnimationFrame ||
@@ -72,7 +71,7 @@ function startAnimating() { // Start animating/drawing
     this.delete = false;
     this.donotmod = false;
     if (radius > 10) {
-        this.highlight = new Highlight(x-15, y-15, this);
+        this.highlight = new Highlight(x-rad/2, y-rad/2, this);
     }
   }
 
@@ -166,12 +165,8 @@ function startAnimating() { // Start animating/drawing
         context.fillStyle = grd;
         context.fill();
         context.lineWidth = 2;
-        if (this.radius < 10 ) {
-            context.strokeStyle = "black";
-        }
-        else {
-            context.strokeStyle = "FFF5EE";
-        }
+
+        context.strokeStyle = "black";
         context.stroke();
         context.restore();
         
@@ -185,7 +180,7 @@ function startAnimating() { // Start animating/drawing
     this.color = '#DBF2FF';
     this.x = x;
     this.y = y;
-    this.radius = 6;
+    this.radius = ball.radius*.2;
     this.ball = ball;
   }
 
@@ -302,6 +297,9 @@ function animate(balls){
 window.onload = function(){
     canvas = document.getElementById("myCanvas");
     context = canvas.getContext('2d');
+    rad = canvas.width*.05;
+    minX = canvas.width/((numBalls+2)*rad)
+    maxX = canvas.width - minX;
     //TODO block click on pause
     canvas.addEventListener('click', clickBall, false);
     startY = canvas.height/2;
@@ -324,10 +322,10 @@ window.onload = function(){
     colors[10] = "#1AFFC6";
     colors[2] = "#FF75BA";
 
-    var xfactor = ((canvas.width - 60) / numBalls);
+    var xfactor = ((canvas.width - rad*2) / numBalls);
     for (var i = 0; i < numBalls; i++) {
         DX= (-DX);
         DY= (-DY);
-        balls[i] = new Ball(colors[i], 30, DX, DY, (xfactor* (i + 1)), startY);
+        balls[i] = new Ball(colors[i], rad, DX, DY, (xfactor* (i + 1)), startY);
     }
 };
